@@ -1,5 +1,42 @@
 // This file contains the functions to create a shader program from scratch and its helper functions.
 
+const vertexShaderSource = `
+// an attribute will receive data from a buffer
+  attribute vec4 a_position;
+
+  // all shaders have a main function
+  void main() {
+
+    // gl_Position is a special variable a vertex shader
+    // is responsible for setting
+    gl_Position = a_position;
+  }
+`
+
+const vertexShaderSource_2 = `
+  attribute vec2 a_position;
+  uniform vec2 u_resolution;
+  void main() {
+    vec2 zeroToOne = a_position / u_resolution;
+    vec2 zeroToTwo = zeroToOne * 2.0;
+    vec2 clipSpace = zeroToTwo - 1.0;
+    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+  }
+`
+
+const fragmentShaderSource = `
+// fragment shaders don't have a default precision so we need
+  // to pick one. mediump is a good default
+  precision mediump float;
+
+  void main() {
+    // gl_FragColor is a special variable a fragment shader
+    // is responsible for setting
+    gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+  }
+`
+
+
 /** 
  * Create Shader with specific type and source given by user
  */
@@ -51,4 +88,8 @@ const createProgramFromScratch = (gl, vertexShaderSource, fragmentShaderSource) 
 
 }
 
-export { createProgramFromScratch };
+export { 
+  vertexShaderSource,
+  vertexShaderSource_2,
+  fragmentShaderSource,
+  createProgramFromScratch };

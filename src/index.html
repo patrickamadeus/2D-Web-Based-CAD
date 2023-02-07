@@ -9,17 +9,14 @@
     <title>WebGL</title>
 </head>
 
-<script id="vertex-shader-2d" type="notjs">
-    attribute vec4 a_position;
+<script  id="vertex-shader-2d_2" type="x-shader/x-vertex">
+    attribute vec2 a_position;
+    uniform vec2 u_resolution;
     void main() {
-        gl_Position = a_position;
-    }
-</script>
-
-<script  id="fragment-shader-2d" type="notjs">
-    precision mediump float;
-    void main() {
-        gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+       vec2 zeroToOne = a_position / u_resolution;
+       vec2 zeroToTwo = zeroToOne * 2.0;
+       vec2 clipSpace = zeroToTwo - 1.0;
+       gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
     }
 </script>
 
@@ -40,10 +37,42 @@
                   <option value="polygon" class="model_choice_option">Polygon</option>
                 </select>
             </div>
+            <div class="slidecontainer">
+                <p>Width</p>
+
+                <input type="range" min="0" max="150" value="90" class="slider" id="width_val">
+                <output id="width_output">90</output>
+
+                <p>Height</p>
+                <input type="range" min="0" max="150" value="30" class="slider" id="height_val">
+                <output id="height_output">30</output>
+            </div>
+            <div class="transform_slide__container">
+                <p>Translate-X</p>
+
+                <input type="range" min="0" max="150" value="0" class="slider" id="trans_x_val">
+                <output id="trans_x_output">0</output>
+
+                <p>Translate-Y</p>
+                <input type="range" min="0" max="150" value="0" class="slider" id="trans_y_val">
+                <output id="trans_y_output">0</output>
+            </div>
         </div>
     </div>
 
-    <script src="index.js"></script>
-    <script src="models/triangle.js"></script>
+    <!-- Entrypoint -->
+    <script type="module" src="index.js"></script>
+
+    <!-- Models -->
+    <script type="module" src="models/triangle.js"></script>
+    <script type="module" src="models/line.js"></script>
+    <script type="module" src="models/square.js"></script>
+    <script type="module" src="models/rectangle.js"></script>
+    <script type="module" src="models/polygon.js"></script>
+
+    <!-- Helpers -->
+    <script type="module" src="helpers/shader.js"></script>
+    <!-- <script type="module" src="helpers/const.js"></script> -->
+    <!-- <script type="module" src="helpers/webgl-utils.js"></script> -->
 </body>
 </html>

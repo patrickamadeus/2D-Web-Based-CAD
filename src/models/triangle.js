@@ -1,54 +1,15 @@
-// import { createProgramFromScratch } from './helpers/shader.js';
-
-function createShader(gl, type, source) {
-    var shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-    if (success) {
-      return shader;
-    }
+import { createProgramFromScratch, vertexShaderSource, fragmentShaderSource } from '../helpers/shader.js';
   
-    console.log(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-  }
-  
-  function createProgram(gl, vertexShader, fragmentShader) {
-    var program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
-    if (success) {
-      return program;
-    }
-  
-    console.log(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-  }
-  
-  const createProgramFromScratch = (gl, vertexShaderSource, fragmentShaderSource) => {
-      const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-      const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-      const program = createProgram(gl, vertexShader, fragmentShader);
-      return program;
-  
-  }
-  
-  const triangle = () => {
-      console.log("MASOK")
+const triangle = () => {
     // Get A WebGL context
     var canvas = document.querySelector("#canvas");
     var gl = canvas.getContext("webgl");
     if (!gl) {
-      console.log("WEB GL NOT SUPPORTED")
+      alert("Unable to initialize WebGL. Your browser or machine may not support it.");
       return;
     }
-  
-    // Get the strings for our GLSL shaders
-    var vertexShaderSource = document.getElementById("vertex-shader-2d").textContent;
-    var fragmentShaderSource = document.getElementById("fragment-shader-2d").textContent;
-  
+        
+    // Build program
     var program = createProgramFromScratch(gl, vertexShaderSource, fragmentShaderSource);
   
     // look up where the vertex data needs to go.
@@ -69,9 +30,7 @@ function createShader(gl, type, source) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions1), gl.STATIC_DRAW);
     // code above this line is initialization code.
     // code below this line is rendering code.
-  
-  //   webglUtils.resizeCanvasToDisplaySize(gl.canvas);
-  
+    
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   
@@ -104,5 +63,4 @@ function createShader(gl, type, source) {
     gl.drawArrays(primitiveType, offset, count);
   } 
   
-
-// module.exports = { triangle };
+export { triangle };

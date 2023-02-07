@@ -7,13 +7,16 @@
 }
 
 .canvas__container {
-    background-color: rgb(194, 194, 194);
     grid-area: 1 / 1 / 2 / 2; 
+    width: 500px;
+    height: auto;
 }
 
 canvas {
-    width: 300px;
-    height: 300px;
+    width: 500px;
+    height: 500px;
+    background-color: rgb(194, 194, 194);
+
 }
 
 .config__container { grid-area: 1 / 2 / 2 / 3; }
