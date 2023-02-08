@@ -27,9 +27,10 @@
             <canvas id="canvas"></canvas>
         </div>
         <div class="config__container">
+            <h2>Model Choice & Color</h2>
             <div>
                 <select name="model_choice" id="model_choice">
-                  <option disabled selected value> -- select an option -- </option>
+                  <option disabled selected value="none"> -- select a model -- </option>
                   <option value="triangle" class="model_choice_option">Triangle</option>
                   <option value="line" class="model_choice_option">Line</option>
                   <option value="square" class="model_choice_option">Square</option>
@@ -37,6 +38,18 @@
                   <option value="polygon" class="model_choice_option">Polygon</option>
                 </select>
             </div>
+            <br/>
+            <div>
+                <select name="color_choice" id="color_choice">
+                  <option disabled selected value="none"> -- select a color -- </option>
+                  <option value="black" class="color_choice_option">Black</option>
+                  <option value="red" class="color_choice_option">Red</option>
+                  <option value="green" class="color_choice_option">Green</option>
+                  <option value="blue" class="color_choice_option">Blue</option>
+                  <option value="yellow" class="color_choice_option">Yellow</option>
+                </select>
+            </div>
+            <h2>Model Size</h2>
             <div class="slidecontainer">
                 <p>Width</p>
 
@@ -47,6 +60,9 @@
                 <input type="range" min="0" max="150" value="30" class="slider" id="height_val">
                 <output id="height_output">30</output>
             </div>
+
+            <br/>
+            <h2>Model Transformation</h2>
             <div class="transform_slide__container">
                 <p>Translate-X</p>
 
@@ -56,6 +72,10 @@
                 <p>Translate-Y</p>
                 <input type="range" min="0" max="150" value="0" class="slider" id="trans_y_val">
                 <output id="trans_y_output">0</output>
+
+                <p>Rotation</p>
+                <input type="range" min="0" max="360" value="0" class="slider" id="rotate_val">
+                <output id="rotate_output">0</output><span> °</span> 
             </div>
         </div>
     </div>
@@ -72,7 +92,8 @@
 
     <!-- Helpers -->
     <script type="module" src="helpers/shader.js"></script>
-    <!-- <script type="module" src="helpers/const.js"></script> -->
-    <!-- <script type="module" src="helpers/webgl-utils.js"></script> -->
+    <script type="module" src="helpers/utility.js"></script>
+    <script type="module" src="helpers/const.js"></script>
+    <script type="module" src="helpers/webgl-utils.js"></script>
 </body>
 </html>

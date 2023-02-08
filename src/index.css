@@ -9,7 +9,7 @@
 .canvas__container {
     grid-area: 1 / 1 / 2 / 2; 
     width: 500px;
-    height: auto;
+    height: 500px;
 }
 
 canvas {
