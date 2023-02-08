@@ -57,7 +57,7 @@
  * visible.
  */
 
-WebGLUtils = function() {
+export var WebGLUtils = function() {
 
   /**
    * Creates the HTLM for a failure message
@@ -160,5 +160,3 @@ WebGLUtils = function() {
              window.setTimeout(callback, 1000/60);
            };
   })();
-  
-  
