@@ -8,74 +8,74 @@
     <link rel="stylesheet" href="index.css">
     <title>WebGL</title>
 </head>
-
-<script  id="vertex-shader-2d_2" type="x-shader/x-vertex">
-    attribute vec2 a_position;
-    uniform vec2 u_resolution;
-    void main() {
-       vec2 zeroToOne = a_position / u_resolution;
-       vec2 zeroToTwo = zeroToOne * 2.0;
-       vec2 clipSpace = zeroToTwo - 1.0;
-       gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-    }
-</script>
-
 <body>
 
     <div class="parent">
         <div class="canvas__container">
             <canvas id="canvas"></canvas>
         </div>
-        <div class="config__container">
-            <h2>Model Choice & Color</h2>
-            <div>
-                <select name="model_choice" id="model_choice">
-                  <option disabled selected value="none"> -- select a model -- </option>
-                  <option value="triangle" class="model_choice_option">Triangle</option>
-                  <option value="line" class="model_choice_option">Line</option>
-                  <option value="square" class="model_choice_option">Square</option>
-                  <option value="rectangle" class="model_choice_option">Rectangle</option>
-                  <option value="polygon" class="model_choice_option">Polygon</option>
-                </select>
-            </div>
-            <br/>
-            <div>
-                <select name="color_choice" id="color_choice">
-                  <option disabled selected value="none"> -- select a color -- </option>
-                  <option value="black" class="color_choice_option">Black</option>
-                  <option value="red" class="color_choice_option">Red</option>
-                  <option value="green" class="color_choice_option">Green</option>
-                  <option value="blue" class="color_choice_option">Blue</option>
-                  <option value="yellow" class="color_choice_option">Yellow</option>
-                </select>
-            </div>
-            <h2>Model Size</h2>
-            <div class="slidecontainer">
-                <p>Width</p>
+            <div class="config__container">
+                <div class="new_model__container"> 
+                    <h2>New Model</h2>
+                    <div>
+                        <select name="model_choice" id="model_choice">
+                          <option disabled selected value="none"> -- select a model -- </option>
+                          <option value="triangle" class="model_choice_option">Triangle</option>
+                          <option value="line" class="model_choice_option">Line</option>
+                          <option value="square" class="model_choice_option">Square</option>
+                          <option value="rectangle" class="model_choice_option">Rectangle</option>
+                          <option value="polygon" class="model_choice_option">Polygon</option>
+                        </select>
+                    </div>
+                    <br/>
+                    <div>
+                        <select name="color_choice" id="color_choice">
+                          <option disabled selected value="none"> -- select a color -- </option>
+                          <option value="black" class="color_choice_option">Black</option>
+                          <option value="red" class="color_choice_option">Red</option>
+                          <option value="green" class="color_choice_option">Green</option>
+                          <option value="blue" class="color_choice_option">Blue</option>
+                          <option value="yellow" class="color_choice_option">Yellow</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="exist_model__container">
+                    <h2>Existing Model</h2>
+                    <div>
+                        <select name="model_list" id="model_list">
+                          <option disabled selected value="none"> -- select a model -- </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="size__container">
 
-                <input type="range" min="0" max="150" value="90" class="slider" id="width_val">
-                <output id="width_output">90</output>
+                    <h2>Model Size</h2>
+                    <p>Width</p>
 
-                <p>Height</p>
-                <input type="range" min="0" max="150" value="30" class="slider" id="height_val">
-                <output id="height_output">30</output>
-            </div>
-
-            <br/>
-            <h2>Model Transformation</h2>
-            <div class="transform_slide__container">
-                <p>Translate-X</p>
-
-                <input type="range" min="0" max="150" value="0" class="slider" id="trans_x_val">
-                <output id="trans_x_output">0</output>
-
-                <p>Translate-Y</p>
-                <input type="range" min="0" max="150" value="0" class="slider" id="trans_y_val">
-                <output id="trans_y_output">0</output>
-
-                <p>Rotation</p>
-                <input type="range" min="0" max="360" value="0" class="slider" id="rotate_val">
-                <output id="rotate_output">0</output><span> °</span> 
+                    <input type="range" min="0" max="500" value="90" class="slider" id="width_val">
+                    <output id="width_output">90</output>
+    
+                    <p>Height</p>
+                    <input type="range" min="0" max="500" value="30" class="slider" id="height_val">
+                    <output id="height_output">30</output>
+                </div>
+                <div class="transform__container">
+                    <h2>Model Transformation</h2>
+                    <div class="transform_slide__container">
+                        <p>Translate-X</p>
+        
+                        <input type="range" min="0" max="150" value="0" class="slider" id="trans_x_val">
+                        <output id="trans_x_output">0</output>
+        
+                        <p>Translate-Y</p>
+                        <input type="range" min="0" max="150" value="0" class="slider" id="trans_y_val">
+                        <output id="trans_y_output">0</output>
+        
+                        <p>Rotation</p>
+                        <input type="range" min="0" max="360" value="0" class="slider" id="rotate_val">
+                        <output id="rotate_output">0</output><span> °</span> 
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,11 +84,11 @@
     <script type="module" src="index.js"></script>
 
     <!-- Models -->
-    <script type="module" src="models/triangle.js"></script>
-    <script type="module" src="models/line.js"></script>
-    <script type="module" src="models/square.js"></script>
-    <script type="module" src="models/rectangle.js"></script>
-    <script type="module" src="models/polygon.js"></script>
+    <script type="module" src="models/Line.js"></script>
+    <script type="module" src="models/Square.js"></script>
+    <script type="module" src="models/Rectangle.js"></script>
+    <script type="module" src="models/Polygon.js"></script>
+    <script type="module" src="models/Model.js"></script>
 
     <!-- Helpers -->
     <script type="module" src="helpers/shader.js"></script>

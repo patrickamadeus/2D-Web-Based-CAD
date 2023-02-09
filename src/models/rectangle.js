@@ -1,96 +1,44 @@
-import { createProgramFromScratch, vertexShaderSource_2, fragmentShaderSource } from '../helpers/shader.js';
+import { Model, Point } from "./Model.js";
+import { euclideanDistance } from "../helpers/utility.js";
 
-const rectangle = () => {
-  // Get A WebGL context
-  /** @type {HTMLCanvasElement} */
-  var canvas = document.querySelector("#canvas");
-  var gl = canvas.getContext("webgl");
-  if (!gl) {
-    return;
-  }
-  
-  var program = createProgramFromScratch(gl, vertexShaderSource_2, fragmentShaderSource);
-  var positionLocation = gl.getAttribLocation(program, "a_position");
+export class Rectangle extends Model {
+    constructor(id) {
+        super(id);
+        this.vertices.push(new Point([0,0],[0,0,0,1],0));
+        this.vertices.push(new Point([0,0],[0,0,0,1],1));
+        this.vertices.push(new Point([0,0],[0,0,0,1],2));
+        this.vertices.push(new Point([0,0],[0,0,0,1],3));
+        this.shape = 'rectangle';
+        this.name = `Rectangle_${id}`;
+    }
 
-  var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-  var colorLocation = gl.getUniformLocation(program, "u_color");
+    modifyVertexAbsis = (id, x) => {
+        this.vertices[id].coordinate[0] = x;
+    }
 
-  var positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    modifyVertexOrdinate = (id, y) => {
+        this.vertices[id].coordinate[1] = y;
+    }
 
-  var translation = [0,0];
-  var width = 90;
-  var height = 30;
-  var color = [Math.random(), Math.random(), Math.random(), 1];
+    modifyVertexCoordinate = (id, x, y) => {
+        this.vertices[id].coordinate = [x, y];
+    }
 
-  drawScene();
+    modifyColor = (rgba) => {
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.vertices[i].setColor(rgba);
+        }
+    }
 
-  function drawScene() {
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    modifyVertexColor = (id, r, g, b, a) => {
+        this.vertices[id].setColor([r,g,b,a]);
+    }
 
-    gl.useProgram(program);
+    getWidth = () => {
+        return euclideanDistance(this.vertices[1].coordinate, this.vertices[0].coordinate);
+    }
 
-    gl.enableVertexAttribArray(positionLocation);
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    setRectangle(gl, translation[0], translation[1], width, height);
-
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
-    gl.uniform4fv(colorLocation, color);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
-
-  const widthSlider = document.getElementById('width_val');
-  const heightSlider = document.getElementById('height_val');
-  const translateXSlider = document.getElementById('trans_x_val');
-  const translateYSlider = document.getElementById('trans_y_val');
-
-  widthSlider.addEventListener('input', (e) => {
-      document.getElementById('width_output').textContent = e.target.value;
-      width = parseInt(e.target.value);
-      drawScene();
-  });
-
-  heightSlider.addEventListener('input', (e) => {
-      document.getElementById('height_output').textContent = e.target.value;
-      height = parseInt(e.target.value);
-      drawScene();
-  });
-
-  translateXSlider.addEventListener('input', (e) => {
-    document.getElementById('trans_x_output').textContent = e.target.value;
-    translation[0] = parseInt(e.target.value);
-    drawScene();
-  });
-
-  translateYSlider.addEventListener('input', (e) => {
-    document.getElementById('trans_y_output').textContent = e.target.value;
-    translation[1] = parseInt(e.target.value);
-    drawScene();
-  });
+    getHeight = () => {
+        return euclideanDistance(this.vertices[2].coordinate, this.vertices[1].coordinate);
+    }
 }
-
-// Fill the buffer with the values that define a rectangle.
-function setRectangle(gl, x, y, width, height) {
-  var x1 = x;
-  var x2 = x + width;
-  var y1 = y;
-  var y2 = y + height;
-  gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([
-          x1, y1,
-          x2, y1,
-          x1, y2,
-          x1, y2,
-          x2, y1,
-          x2, y2,
-      ]),
-      gl.STATIC_DRAW);
-}
-
-export { rectangle };

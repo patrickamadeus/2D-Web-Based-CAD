@@ -1,24 +1,26 @@
-import { triangle } from './models/triangle.js';
-// import { line } from './models/line.js';
-import { square } from './models/square.js';
-import { rectangle } from './models/rectangle.js';
-// import { polygon } from './models/polygon.js';
-
 // importing setup config
 import { WebGLUtils } from './helpers/webgl-utils.js';
 import { createProgramFromScratch, vSource, fSource } from './helpers/shader.js';
 
-// Helpers
+// Helpers & Utils
 import { flatten, dec_hex, hex_dec, atan3, norm, euclideanDistance } from './helpers/utility.js';
 import { colorMap } from './helpers/const.js';
 
+// Models
+import { Line } from './models/line.js';
+import { Square } from './models/square.js';
+import { Rectangle } from './models/rectangle.js';
+import { Polygon } from './models/polygon.js';
+
 
 /* ----------- Global Variables -----------------------------------------------------------*/
-var vertices = [];
-var colors = [];
+var objects = [];
 var canvas = document.querySelector("#canvas");
 var isDrawing = false;
-
+var rectangleID = 0
+var polygonID = 0
+var squareID = 0
+var lineID = 0
 
 
 /* ----------- Initialization -----------------------------------------------------------*/
@@ -39,7 +41,6 @@ const vBuffer = gl.createBuffer();
 const cBuffer = gl.createBuffer();
 
 
-
 /* ----------- Canvas Event Listener -----------------------------------------------------------*/
 var modelChoice;
 var colorChoice;
@@ -49,10 +50,10 @@ canvas.addEventListener("mousemove", function(e) {
         if(isDrawing) {
             let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
             let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-            vertices[vertices.length-1][0]  = x;
-            vertices[vertices.length-1][1]  = y;
-            vertices[vertices.length-2][0]  = x;
-            vertices[vertices.length-3][1]  = y;
+
+            objects[objects.length-1].modifyVertexCoordinate(3,x,y);
+            objects[objects.length-1].modifyVertexAbsis(2,x);
+            objects[objects.length-1].modifyVertexOrdinate(1,y);
         }
     } else if (modelChoice == "square") {
 
@@ -67,21 +68,33 @@ canvas.addEventListener('mousedown', (e) => {
     modelChoice = document.querySelector("#model_choice").value;
     colorChoice = document.querySelector("#color_choice").value;
 
+    console.log(objects)
+
     if (modelChoice == "none" || colorChoice == "none") {
         alert("Please choose model and color");
         return;
     }
 
+    if(!isDrawing && objects.length == 5){
+        alert("You can only draw 5 objects!");
+        return;
+    }
+
     if (modelChoice == "rectangle") {
-        isDrawing = !isDrawing;
-    
-        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-        let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    
-        // untuk kotak
-        for(let i = 0; i < 4; i++) {
-            vertices.push([x,y]);
-            colors.push(colorMap.get(colorChoice));
+        if (!isDrawing){
+            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+            
+            let rectangle = new Rectangle(rectangleID++);
+            for(let i = 0; i < 4; i++) {
+                rectangle.modifyVertexCoordinate(i, x, y);
+            }
+            rectangle.modifyColor(colorMap.get(colorChoice));
+            objects.push(rectangle);
+            isDrawing = true;
+        } else{
+            isDrawing = false;
+            updateModelList();            
         }
     } else if (modelChoice == "square") {
         
@@ -92,59 +105,31 @@ canvas.addEventListener('mousedown', (e) => {
     }
 })
 
-
+var modelList = document.getElementById('model_list');
+const updateModelList = () =>{
+    modelList.innerHTML = `<option disabled selected value="none"> -- select a color -- </option>`;
+    for (let i = 0; i < objects.length; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = objects[i].name;
+        modelList.appendChild(opt);
+    }
+}
 
 
 /* ----------- Canvas Rendering -----------------------------------------------------------*/
 const render = () => {
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    let verticesFinal = [];
-    for(let i=0; i<vertices.length; i+=4) {
-        let centroid = [(vertices[i][0] + vertices[i+3][0])/2, (vertices[i][1] + vertices[i+3][1])/2];
-        for(let j=0; j<4; j++) {
-            let dis = euclideanDistance(centroid, vertices[i+j]);
-            let arg = norm(Math.atan2(vertices[i+j][0] - centroid[0], vertices[i+j][1] - centroid[1]) + theta/180 * Math.PI);
-            verticesFinal.push([
-                centroid[0] + dis * Math.cos(arg),
-                centroid[1] + dis * Math.sin(arg)
-            ])
-        }
+    for (let i = 0; i < objects.length; i++) {
+        objects[i].render(gl, program, vBuffer, cBuffer);
     }
-
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
-    
-    const vPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
-    
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
-    
-    const vColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
-    
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
-    for(let i=0; i<vertices.length; i+=4) {
-        gl.drawArrays(gl.TRIANGLE_STRIP, i, 4);
-    }
-    
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 4, 4);
-    
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
-    // for(let i=0; i<vertices.length; i+=4) {
-    //         gl.drawArrays(gl.TRIANGLE_STRIP, i, 4);
-    //     }
-        
     window.requestAnimFrame(render);
 }
+
+render();
+
     
-    
-/* * * * * * Model Selection * * * * * */
+/* ------- Model Selection ---------------------------------------- */
 const model_choice = document.getElementById('model_choice');
 model_choice.addEventListener('change', (e) => {
     if (e.target.value === 'line') {        //
@@ -161,10 +146,39 @@ model_choice.addEventListener('change', (e) => {
 });
 
 
+const existing_model = document.getElementById('model_list');
+existing_model.addEventListener('change', (e) => {
+    let selectedModel = objects[e.target.value];
+    if (selectedModel instanceof Rectangle) {
+        document.getElementById('width_val').disabled = false;
+        document.getElementById('height_val').disabled = false;
+
+        // update current size
+        document.getElementById('width_val').value = selectedModel.getWidth() / 2 * canvas.width;
+        document.getElementById('width_output').textContent = selectedModel.getWidth() / 2 * canvas.width;
+
+        document.getElementById('height_val').value = selectedModel.getHeight() / 2 * canvas.height;
+        document.getElementById('height_output').textContent =  selectedModel.getHeight() / 2 * canvas.height;
+    }
+});
+
+/* --------- Model Sizing Area ---------- */
+const widthSlider = document.getElementById('width_val');
+widthSlider.addEventListener('input', (e) => {
+    document.getElementById('width_output').textContent = e.target.value;
+});
+
+
+
 /* --------- Transformation Area --------- */
 
 // Translation
+const translateSliderX = document.getElementById('trans_x_val');
+translateSliderX.addEventListener('input', (e) => {
+    document.getElementById("trans_x_output").textContent = e.target.value;
+    console.log(e.target.value)
 
+});
 
 // Rotation
 // TODO: Make Array of Theta to keep on track on every corresponding shape
@@ -175,8 +189,3 @@ rotateSlider.addEventListener('input', (e) => {
     document.getElementById('rotate_output').textContent = e.target.value;
     theta = e.target.value;
 });
-
-
-
-
-render();
