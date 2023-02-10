@@ -56,7 +56,14 @@ canvas.addEventListener("mousemove", function(e) {
             objects[objects.length-1].changeVertexOrdinate(1,y);
         }
     } else if (modelChoice == "square") {
-
+        if(isDrawing){
+            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    
+            objects[objects.length-1].changeVertexCoordinate(3,x,y);
+            objects[objects.length-1].changeVertexAbsis(2,x);
+            objects[objects.length-1].changeVertexOrdinate(1,y);
+        }
     } else if (modelChoice == "line") {
         
     } else if (modelChoice == "polygon") {
@@ -67,8 +74,6 @@ canvas.addEventListener("mousemove", function(e) {
 canvas.addEventListener('mousedown', (e) => {
     modelChoice = document.querySelector("#model_choice").value;
     colorChoice = document.querySelector("#color_choice").value;
-
-    console.log(objects)
 
     if (modelChoice == "none" || colorChoice == "none") {
         alert("Please choose model and color");
@@ -98,6 +103,22 @@ canvas.addEventListener('mousedown', (e) => {
             updateModelList();
         }
     } else if (modelChoice == "square") {
+        if (!isDrawing){
+            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+            
+            let square = new Square(squareID++);
+            for(let i = 0; i < 4; i++) {
+                square.changeVertexCoordinate(i, x, y);
+            }
+            square.changeColor(CMAP.get(colorChoice));
+            objects.push(square);
+            isDrawing = true;
+        } else{
+            isDrawing = false;
+            objects[objects.length-1].computeCenter();
+            updateModelList();
+        }
         
     } else if (modelChoice == "line") {
         
@@ -144,6 +165,8 @@ if (existing_model.value == "none") {
 existing_model.addEventListener('change', (e) => {
     let selectedModel = objects[e.target.value];
     if (selectedModel instanceof Rectangle) {
+
+        // Update option accessibility
         document.getElementById('width_val').disabled = false;
         document.getElementById('height_val').disabled = false;
         document.getElementById('trans_x_val').disabled = false;
@@ -159,12 +182,40 @@ existing_model.addEventListener('change', (e) => {
         // update current position in canvas
         let x = selectedModel.getCenter()[0] / 2 * CANVAS_WIDTH;
         let y = selectedModel.getCenter()[1] / 2 * CANVAS_HEIGHT;
-
         document.getElementById("trans_x_val").value = x;
         document.getElementById("trans_x_output").textContent = x;
         document.getElementById("trans_y_val").value = y;
         document.getElementById("trans_y_output").textContent = y;
+
+
+    } else if (selectedModel instanceof Square) {
+
+        // Update option accessibility
+        document.getElementById('width_val').disabled = false;
+        document.getElementById('height_val').disabled = true;
+        document.getElementById('trans_x_val').disabled = false;
+        document.getElementById('trans_y_val').disabled = false;
+        document.getElementById('rotate_val').disabled = false;
+
+        // update current size
+        document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
+        document.getElementById('width_output').textContent = selectedModel.getWidth() / 2 * CANVAS_WIDTH; 
+
+        // update current position in canvas
+        let x = selectedModel.getCenter()[0] / 2 * CANVAS_WIDTH;
+        let y = selectedModel.getCenter()[1] / 2 * CANVAS_HEIGHT;
+        document.getElementById("trans_x_val").value = x;
+        document.getElementById("trans_x_output").textContent = x;
+        document.getElementById("trans_y_val").value = y;
+        document.getElementById("trans_y_output").textContent = y;
+
+
+    } else if (selectedModel instanceof Line) {
+        // TODO: implement line
+    } else if (selectedModel instanceof Polygon) {
+        // TODO: implement polygon
     }
+
 });
 
 /* --------- Model Sizing Area ---------- */
@@ -211,15 +262,14 @@ translateSliderY.addEventListener('input', (e) => {
 const rotateSlider = document.getElementById('rotate_val');
 rotateSlider.addEventListener('input', (e) => {
     document.getElementById('rotate_output').textContent = e.target.value;
-    objects[existing_model.value].rotate(e.target.value);
-
+    objects[existing_model.value].rotate(e.target.value, -1);
 });
 
 
 
 /* ------------------------------- GARBAGE CODE --------------------------------- */
 // model_choice.addEventListener('change', (e) => {
-//     if (e.target.value === 'line') {        //
+//     if (e.target.value === 'line') {
 //         document.getElementById('height_val').disabled = true;
 //     } else if (e.target.value === 'square') {
 //         document.getElementById('height_val').disabled = true;

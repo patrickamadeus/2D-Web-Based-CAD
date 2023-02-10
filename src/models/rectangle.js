@@ -12,28 +12,6 @@ export class Rectangle extends Model {
         this.name = `Rectangle_${id}`;
     }
 
-    changeVertexAbsis = (id, x) => {
-        this.vertices[id].coordinate[0] = x;
-    }
-
-    changeVertexOrdinate = (id, y) => {
-        this.vertices[id].coordinate[1] = y;
-    }
-
-    changeVertexCoordinate = (id, x, y) => {
-        this.vertices[id].coordinate = [x, y];
-    }
-
-    changeColor = (rgba) => {
-        for (let i = 0; i < this.vertices.length; i++) {
-            this.vertices[i].setColor(rgba);
-        }
-    }
-
-    changeVertexColor = (id, r, g, b, a) => {
-        this.vertices[id].setColor([r,g,b,a]);
-    }
-
     getWidth = () => {
         return euclideanDistance(this.vertices[2].coordinate, this.vertices[0].coordinate);
     }

@@ -11,6 +11,28 @@ export class Model {
         this.id = id;
     }
 
+    changeVertexAbsis = (id, x) => {
+        this.vertices[id].coordinate[0] = x;
+    }
+
+    changeVertexOrdinate = (id, y) => {
+        this.vertices[id].coordinate[1] = y;
+    }
+
+    changeVertexCoordinate = (id, x, y) => {
+        this.vertices[id].coordinate = [x, y];
+    }
+
+    changeColor = (rgba) => {
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.vertices[i].setColor(rgba);
+        }
+    }
+
+    changeVertexColor = (id, r, g, b, a) => {
+        this.vertices[id].setColor([r,g,b,a]);
+    }
+
     computeCenter = () => {
         this.center.coordinate = [0,0];
 
@@ -25,10 +47,6 @@ export class Model {
 
     getCenter = () => {
         return this.center.coordinate
-    }
-
-    setRotation = (angle) => {
-        this.rotation = angle;
     }
 
     setTranslateX = (x) => {
@@ -47,12 +65,12 @@ export class Model {
         this.computeCenter();
     }
 
-    rotate = (angle) => {
+    rotate = (angle, cw) => {
         const diffAngle = (angle - this.rotation) * Math.PI / 180;
         this.rotation = angle;
 
         for (let j = 0; j < this.vertices.length; j++) {
-            const rotatedPoint = rotatePoint(this.vertices[j].coordinate[0],this.vertices[j].coordinate[1],this.center.coordinate[0],this.center.coordinate[1],diffAngle,-1);
+            const rotatedPoint = rotatePoint(this.vertices[j].coordinate[0],this.vertices[j].coordinate[1],this.center.coordinate[0],this.center.coordinate[1],diffAngle,cw);
 
             this.vertices[j].coordinate[0] = rotatedPoint[0];
             this.vertices[j].coordinate[1] = rotatedPoint[1];
