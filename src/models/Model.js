@@ -6,8 +6,7 @@ export class Model {
         this.name = `Model_${id}`;
         this.center = new Point([0,0],[0,0,0,1],0);
         this.rotation = 0;
-        this.translateX = 0;
-        this.translateY = 0;
+        this.dilatation = 1;
         this.id = id;
     }
 
@@ -74,6 +73,18 @@ export class Model {
 
             this.vertices[j].coordinate[0] = rotatedPoint[0];
             this.vertices[j].coordinate[1] = rotatedPoint[1];
+        }
+    }
+
+    dilate = (mul) => {
+        const nMul = mul / this.dilatation;
+        this.dilatation = mul;
+
+        for (let i = 0; i < this.vertices.length; i++) {
+          this.vertices[i].coordinate[0] =
+            nMul * (this.vertices[i].coordinate[0] - this.center.coordinate[0]) + this.center.coordinate[0];
+          this.vertices[i].coordinate[1] =
+            nMul * (this.vertices[i].coordinate[1] - this.center.coordinate[1]) + this.center.coordinate[1];
         }
     }
 

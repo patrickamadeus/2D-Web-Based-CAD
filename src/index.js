@@ -160,6 +160,7 @@ if (existing_model.value == "none") {
     document.getElementById('trans_x_val').disabled = true;
     document.getElementById('trans_y_val').disabled = true;
     document.getElementById('rotate_val').disabled = true;
+    document.getElementById('dilatation_val').disabled = true;
 }
 
 existing_model.addEventListener('change', (e) => {
@@ -172,6 +173,7 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById('trans_x_val').disabled = false;
         document.getElementById('trans_y_val').disabled = false;
         document.getElementById('rotate_val').disabled = false;
+        document.getElementById('dilatation_val').disabled = false;
     
         // update current size
         document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
@@ -196,6 +198,7 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById('trans_x_val').disabled = false;
         document.getElementById('trans_y_val').disabled = false;
         document.getElementById('rotate_val').disabled = false;
+        document.getElementById('dilatation_val').disabled = false;
 
         // update current size
         document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
@@ -259,6 +262,8 @@ translateSliderY.addEventListener('input', (e) => {
 });
 
 
+
+// rotation
 const rotateSlider = document.getElementById('rotate_val');
 rotateSlider.addEventListener('input', (e) => {
     document.getElementById('rotate_output').textContent = e.target.value;
@@ -267,17 +272,9 @@ rotateSlider.addEventListener('input', (e) => {
 
 
 
-/* ------------------------------- GARBAGE CODE --------------------------------- */
-// model_choice.addEventListener('change', (e) => {
-//     if (e.target.value === 'line') {
-//         document.getElementById('height_val').disabled = true;
-//     } else if (e.target.value === 'square') {
-//         document.getElementById('height_val').disabled = true;
-//     } else if (e.target.value === 'rectangle') {
-//         document.getElementById('width_val').disabled = false;
-//         document.getElementById('height_val').disabled = false;
-//     } else if (e.target.value === 'polygon') {
-//         document.getElementById('height_val').disabled = true;
-//         document.getElementById('width_val').disabled = true;
-//     }
-// });
+// dilatation
+const dilatationSlider = document.getElementById('dilatation_val')
+dilatationSlider.addEventListener( 'input' , (e) => {
+    document.getElementById('dilatation_output').textContent = e.target.value
+    objects[existing_model.value].dilate(e.target.value)
+})
