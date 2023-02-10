@@ -20,7 +20,6 @@
                     <div>
                         <select name="model_choice" id="model_choice">
                           <option disabled selected value="none"> -- select a model -- </option>
-                          <option value="triangle" class="model_choice_option">Triangle</option>
                           <option value="line" class="model_choice_option">Line</option>
                           <option value="square" class="model_choice_option">Square</option>
                           <option value="rectangle" class="model_choice_option">Rectangle</option>
@@ -52,23 +51,23 @@
                     <h2>Model Size</h2>
                     <p>Width</p>
 
-                    <input type="range" min="0" max="500" value="90" class="slider" id="width_val">
-                    <output id="width_output">90</output>
+                    <input type="range" min="0" max="500" value="0" class="slider" id="width_val">
+                    <output id="width_output">0</output>
     
                     <p>Height</p>
-                    <input type="range" min="0" max="500" value="30" class="slider" id="height_val">
-                    <output id="height_output">30</output>
+                    <input type="range" min="0" max="500" value="0" class="slider" id="height_val">
+                    <output id="height_output">0</output>
                 </div>
                 <div class="transform__container">
                     <h2>Model Transformation</h2>
                     <div class="transform_slide__container">
                         <p>Translate-X</p>
         
-                        <input type="range" min="0" max="150" value="0" class="slider" id="trans_x_val">
+                        <input type="range" min="-250" max="250" value="0" class="slider" id="trans_x_val">
                         <output id="trans_x_output">0</output>
         
                         <p>Translate-Y</p>
-                        <input type="range" min="0" max="150" value="0" class="slider" id="trans_y_val">
+                        <input type="range" min="-250" max="250" value="0" class="slider" id="trans_y_val">
                         <output id="trans_y_output">0</output>
         
                         <p>Rotation</p>

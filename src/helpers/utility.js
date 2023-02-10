@@ -4,6 +4,12 @@ const euclideanDistance = (x,y) => {
     );
 };
 
+const rotatePoint = (oriX,oriY,cX,cY,angle,clockwise) => {
+    const x = (oriX - cX) * Math.cos(clockwise * angle) - (oriY - cY) * Math.sin(clockwise * angle) + cX;
+    const y = (oriX - cX) * Math.sin(clockwise * angle) + (oriY - cY) * Math.cos(clockwise * angle) + cY;
+    return [x,y];
+}
+
 const norm = (deg) => {
     return ((((deg + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
 };
@@ -70,4 +76,4 @@ window.requestAnimFrame = (function () {
 })();
 
 
-export { flatten, dec_hex, hex_dec, atan3, norm, euclideanDistance };
+export { flatten, dec_hex, hex_dec, atan3, norm, euclideanDistance, rotatePoint };
