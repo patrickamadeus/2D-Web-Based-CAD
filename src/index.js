@@ -46,34 +46,34 @@ var modelChoice;
 var colorChoice;
 
 canvas.addEventListener("mousemove", function(e) {
-    if (modelChoice == "rectangle") {
-        if(isDrawing) {
-            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    if (isDrawing){
+        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+        let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+        let object = objects[objects.length-1];
 
-            objects[objects.length-1].changeVertexCoordinate(3,x,y);
-            objects[objects.length-1].changeVertexAbsis(2,x);
-            objects[objects.length-1].changeVertexOrdinate(1,y);
+        if (modelChoice == "rectangle") {
+            object.setVertexCoordinate(3,x,y);
+            object.setVertexCoordinate(2,x,object.getVertexCoor(0)[1]);
+            object.setVertexCoordinate(1,object.getVertexCoor(0)[0],y);
+        } else if (modelChoice == "square") {
+            // object.setVertexCoordinate(3,x,y);
+            // object.setVertexAbsis(2,x);
+            // object.setVertexOrdinate(1,y);
+
+            object.moveVertex(0, [x,y]);
+        } else if (modelChoice == "line") {
+            
+        } else if (modelChoice == "polygon") {
+            
         }
-    } else if (modelChoice == "square") {
-        if(isDrawing){
-            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    
-            objects[objects.length-1].changeVertexCoordinate(3,x,y);
-            objects[objects.length-1].changeVertexAbsis(2,x);
-            objects[objects.length-1].changeVertexOrdinate(1,y);
-        }
-    } else if (modelChoice == "line") {
-        
-    } else if (modelChoice == "polygon") {
-        
     }
 });
 
 canvas.addEventListener('mousedown', (e) => {
     modelChoice = document.querySelector("#model_choice").value;
     colorChoice = document.querySelector("#color_choice").value;
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     if (modelChoice == "none" || colorChoice == "none") {
         alert("Please choose model and color");
@@ -87,14 +87,10 @@ canvas.addEventListener('mousedown', (e) => {
 
     if (modelChoice == "rectangle") {
         if (!isDrawing){
-            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-            
             let rectangle = new Rectangle(rectangleID++);
-            for(let i = 0; i < 4; i++) {
-                rectangle.changeVertexCoordinate(i, x, y);
-            }
-            rectangle.changeColor(CMAP.get(colorChoice));
+
+            rectangle.vertices[0].coordinate = [x,y];
+            rectangle.setColor(CMAP.get(colorChoice));
             objects.push(rectangle);
             isDrawing = true;
         } else{
@@ -104,15 +100,14 @@ canvas.addEventListener('mousedown', (e) => {
         }
     } else if (modelChoice == "square") {
         if (!isDrawing){
-            let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-            let y =  1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-            
             let square = new Square(squareID++);
-            for(let i = 0; i < 4; i++) {
-                square.changeVertexCoordinate(i, x, y);
-            }
-            square.changeColor(CMAP.get(colorChoice));
+            // for(let i = 0; i < 4; i++) {
+            //     square.setVertexCoordinate(i, x, y);
+            // }
+            // square.vertices[0].coordinate = [x,y];
+            square.setColor(CMAP.get(colorChoice));
             objects.push(square);
+            console.log(objects[objects.length-1].vertices)
             isDrawing = true;
         } else{
             isDrawing = false;

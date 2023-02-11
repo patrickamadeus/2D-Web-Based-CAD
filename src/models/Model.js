@@ -10,25 +10,29 @@ export class Model {
         this.id = id;
     }
 
-    changeVertexAbsis = (id, x) => {
+    getVertexCoor = (id) => {
+        return this.vertices[id].coordinate;
+    }
+
+    setVertexAbsis = (id, x) => {
         this.vertices[id].coordinate[0] = x;
     }
 
-    changeVertexOrdinate = (id, y) => {
+    setVertexOrdinate = (id, y) => {
         this.vertices[id].coordinate[1] = y;
     }
 
-    changeVertexCoordinate = (id, x, y) => {
+    setVertexCoordinate = (id, x, y) => {
         this.vertices[id].coordinate = [x, y];
     }
 
-    changeColor = (rgba) => {
+    setColor = (rgba) => {
         for (let i = 0; i < this.vertices.length; i++) {
             this.vertices[i].setColor(rgba);
         }
     }
 
-    changeVertexColor = (id, r, g, b, a) => {
+    setVertexColor = (id, r, g, b, a) => {
         this.vertices[id].setColor([r,g,b,a]);
     }
 
@@ -75,6 +79,18 @@ export class Model {
             this.vertices[j].coordinate[1] = rotatedPoint[1];
         }
     }
+
+    // rotate = (deg, cw) => {
+    //     const diffDeg = (deg - this.rotation) * Math.PI / 180;
+    //     this.rotation = deg;
+
+    //     for (let i = 0; i < this.vertices.length; i++) {
+    //       const dist = euclideanDistance(this.center.coordinate, this.vertices[i].coordinate);
+    //       const arg = norm(atan3(this.center.coordinate, this.vertices[i].coordinate) + diffDeg);
+    //       this.vertices[i].coordinate[0] = this.center.coordinate[0] + Math.cos(arg) * dist;
+    //       this.vertices[i].coordinate[1] = this.center.coordinate[1] + Math.sin(arg) * dist;
+    //     }
+    // }
 
     dilate = (mul) => {
         const nMul = mul / this.dilatation;
