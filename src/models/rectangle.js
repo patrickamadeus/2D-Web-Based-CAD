@@ -1,6 +1,18 @@
 import { Model, Point } from "./Model.js";
 import { euclideanDistance,norm,atan3 } from "../helpers/utility.js";
 
+
+// FAN
+/*
+    0----------------------1
+    |                      |
+    |                      |
+    |                      |
+    |                      |
+    |                      |
+    3----------------------2
+*/
+
 export class Rectangle extends Model {
     constructor(id) {
         super(id);
@@ -13,11 +25,11 @@ export class Rectangle extends Model {
     }
 
     getWidth = () => {
-        return euclideanDistance(this.vertices[2].coordinate, this.vertices[0].coordinate);
+        return euclideanDistance(this.vertices[1].coordinate, this.vertices[0].coordinate);
     }
 
     getHeight = () => {
-        return euclideanDistance(this.vertices[1].coordinate, this.vertices[0].coordinate);
+        return euclideanDistance(this.vertices[3].coordinate, this.vertices[0].coordinate);
     }
 
     setWidth = (w) => {
@@ -26,14 +38,14 @@ export class Rectangle extends Model {
         this.vertices[0].coordinate[0] -= diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[0].coordinate[1] += diff * Math.sin(this.rotation * Math.PI / 180);
 
-        this.vertices[1].coordinate[0] -= diff * Math.cos(this.rotation * Math.PI / 180);
-        this.vertices[1].coordinate[1] += diff * Math.sin(this.rotation * Math.PI / 180);
+        this.vertices[1].coordinate[0] += diff * Math.cos(this.rotation * Math.PI / 180);
+        this.vertices[1].coordinate[1] -= diff * Math.sin(this.rotation * Math.PI / 180);
 
         this.vertices[2].coordinate[0] += diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[2].coordinate[1] -= diff * Math.sin(this.rotation * Math.PI / 180);
 
-        this.vertices[3].coordinate[0] += diff * Math.cos(this.rotation * Math.PI / 180);
-        this.vertices[3].coordinate[1] -= diff * Math.sin(this.rotation * Math.PI / 180);
+        this.vertices[3].coordinate[0] -= diff * Math.cos(this.rotation * Math.PI / 180);
+        this.vertices[3].coordinate[1] += diff * Math.sin(this.rotation * Math.PI / 180);
 
         this.computeCenter();
     }
@@ -44,11 +56,11 @@ export class Rectangle extends Model {
         this.vertices[0].coordinate[1] += diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[0].coordinate[0] += diff * Math.sin(this.rotation * Math.PI / 180);
 
-        this.vertices[1].coordinate[1] -= diff * Math.cos(this.rotation * Math.PI / 180);
-        this.vertices[1].coordinate[0] -= diff * Math.sin(this.rotation * Math.PI / 180);
+        this.vertices[1].coordinate[1] += diff * Math.cos(this.rotation * Math.PI / 180);
+        this.vertices[1].coordinate[0] += diff * Math.sin(this.rotation * Math.PI / 180);
 
-        this.vertices[2].coordinate[1] += diff * Math.cos(this.rotation * Math.PI / 180);
-        this.vertices[2].coordinate[0] += diff * Math.sin(this.rotation * Math.PI / 180);
+        this.vertices[2].coordinate[1] -= diff * Math.cos(this.rotation * Math.PI / 180);
+        this.vertices[2].coordinate[0] -= diff * Math.sin(this.rotation * Math.PI / 180);
 
         this.vertices[3].coordinate[1] -= diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[3].coordinate[0] -= diff * Math.sin(this.rotation * Math.PI / 180);

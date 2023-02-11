@@ -52,14 +52,10 @@ canvas.addEventListener("mousemove", function(e) {
         let object = objects[objects.length-1];
 
         if (modelChoice == "rectangle") {
-            object.setVertexCoordinate(3,x,y);
-            object.setVertexCoordinate(2,x,object.getVertexCoor(0)[1]);
-            object.setVertexCoordinate(1,object.getVertexCoor(0)[0],y);
+            object.setVertexCoordinate(1,x,object.getVertexCoor(0)[1]);
+            object.setVertexCoordinate(2,x,y);
+            object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
         } else if (modelChoice == "square") {
-            // object.setVertexCoordinate(3,x,y);
-            // object.setVertexAbsis(2,x);
-            // object.setVertexOrdinate(1,y);
-
             object.moveVertex(0, [x,y]);
         } else if (modelChoice == "line") {
             
@@ -101,10 +97,6 @@ canvas.addEventListener('mousedown', (e) => {
     } else if (modelChoice == "square") {
         if (!isDrawing){
             let square = new Square(squareID++);
-            // for(let i = 0; i < 4; i++) {
-            //     square.setVertexCoordinate(i, x, y);
-            // }
-            // square.vertices[0].coordinate = [x,y];
             square.setColor(CMAP.get(colorChoice));
             objects.push(square);
             console.log(objects[objects.length-1].vertices)

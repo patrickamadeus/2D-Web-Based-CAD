@@ -128,7 +128,7 @@ export class Model {
         gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vColor);
     
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
     }
 }
 
