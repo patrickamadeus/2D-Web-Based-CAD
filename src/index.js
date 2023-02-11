@@ -4,6 +4,7 @@ import { createProgramFromScratch, vSource, fSource } from './helpers/shader.js'
 
 // Helpers & Utils
 import { CANVAS_HEIGHT, CANVAS_WIDTH, CMAP } from './helpers/const.js';
+import { exportFile } from './helpers/load.js';
 
 // Models
 import { Line } from './models/line.js';
@@ -26,13 +27,22 @@ var lineID = 0
 const gl = WebGLUtils.setupWebGL(canvas);
 if ( !gl ) { alert( "WebGL isn't available" ); }
 
-// set Canvas size
+
+
+// set size and scale
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-gl.viewport(0, 0, canvas.width, canvas.height);
-gl.clearColor(0.8, 0.8, 0.8, 1.0);
+document.getElementById("width_val").setAttribute("max", CANVAS_WIDTH);
+document.getElementById("height_val").setAttribute("max", CANVAS_HEIGHT);
+document.getElementById("trans_x_val").setAttribute("min", CANVAS_WIDTH / 2 * -1);
+document.getElementById("trans_x_val").setAttribute("max", CANVAS_WIDTH / 2);
+document.getElementById("trans_y_val").setAttribute("min", CANVAS_HEIGHT / 2 * -1);
+document.getElementById("trans_y_val").setAttribute("max", CANVAS_HEIGHT / 2);
+
 
 // initialize program
+gl.viewport(0, 0, canvas.width, canvas.height);
+gl.clearColor(0.8, 0.8, 0.8, 1.0);
 const program = createProgramFromScratch(gl, vSource, fSource);
 gl.useProgram(program);
 
@@ -283,3 +293,16 @@ const modelColor = document.getElementById('edit_color_choice');
 modelColor.addEventListener('change', (e) => {
     objects[existing_model.value].setColor(CMAP.get(e.target.value));
 });
+
+
+
+/* --------- Import & Export Section --------- */
+const exportFilename = document.getElementById('export_file').value;
+const exportButton = document.getElementById('export_button');
+exportButton.addEventListener('click', (e) => {
+    exportFile(exportFilename, objects);
+});
+
+
+const importFile = document.getElementById('import_file');
+const importButton = document.getElementById('import_button');

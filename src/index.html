@@ -62,23 +62,30 @@
                     <h2>Model Size</h2>
                     <p>Width</p>
 
-                    <input type="range" min="0" max="700" value="0" class="size_slider" id="width_val">
+                    <input type="range" value="0" class="size_slider" id="width_val">
                     <output id="width_output">0</output>
     
                     <p>Height</p>
-                    <input type="range" min="0" max="700" value="0" class="size_slider" id="height_val">
+                    <input type="range" value="0" class="size_slider" id="height_val">
                     <output id="height_output">0</output>
+                    
+                    <section class="file">
+                        <input type="text" id="export_file" placeholder="Enter file name" />
+                        <input type="button" value="Export" id="export_button"/>
+                        <input type="file" id="import_file" accept=".json" />
+                        <input type="button" value="Import" id="import_button"/>
+                    </section>
                 </div>
                 <div class="transform__container">
                     <h2>Model Transformation</h2>
                     <div class="transform_slide__container">
                         <p>Translate-X</p>
         
-                        <input type="range" min="-350" max="350" value="0" class="trans_slider" id="trans_x_val">
+                        <input type="range" value="0" class="trans_slider" id="trans_x_val">
                         <output id="trans_x_output">0</output>
         
                         <p>Translate-Y</p>
-                        <input type="range" min="-350" max="350" value="0" class="trans_slider" id="trans_y_val">
+                        <input type="range" value="0" class="trans_slider" id="trans_y_val">
                         <output id="trans_y_output">0</output>
         
                         <p>Rotation</p>
@@ -109,5 +116,6 @@
     <script type="module" src="helpers/utility.js"></script>
     <script type="module" src="helpers/const.js"></script>
     <script type="module" src="helpers/webgl-utils.js"></script>
+    <script type="module" src="helpers/load.js"></script>
 </body>
 </html>

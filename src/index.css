@@ -16,6 +16,10 @@ canvas {
     height: 700px;
 }
 
+.file {
+    margin-top: 100px;
+}
+
 
 /* .config__container { grid-area: 1 / 2 / 2 / 3; } */
 
