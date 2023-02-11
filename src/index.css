@@ -12,8 +12,8 @@ canvas {
 
 .canvas__container {
     grid-area: 1 / 1 / 2 / 2; 
-    width: 500px;
-    height: 500px;
+    width: 700px;
+    height: 700px;
 }
 
 

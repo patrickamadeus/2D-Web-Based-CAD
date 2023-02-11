@@ -45,17 +45,28 @@
                           <option disabled selected value="none"> -- select a model -- </option>
                         </select>
                     </div>
+                    <br/>
+                    <div>
+                        <select name="edit_color_choice" id="edit_color_choice">
+                          <option disabled selected value="none"> -- model color -- </option>
+                          <option value="black" class="color_choice_option">Black</option>
+                          <option value="red" class="color_choice_option">Red</option>
+                          <option value="green" class="color_choice_option">Green</option>
+                          <option value="blue" class="color_choice_option">Blue</option>
+                          <option value="yellow" class="color_choice_option">Yellow</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="size__container">
 
                     <h2>Model Size</h2>
                     <p>Width</p>
 
-                    <input type="range" min="0" max="500" value="0" class="slider" id="width_val">
+                    <input type="range" min="0" max="700" value="0" class="size_slider" id="width_val">
                     <output id="width_output">0</output>
     
                     <p>Height</p>
-                    <input type="range" min="0" max="500" value="0" class="slider" id="height_val">
+                    <input type="range" min="0" max="700" value="0" class="size_slider" id="height_val">
                     <output id="height_output">0</output>
                 </div>
                 <div class="transform__container">
@@ -63,11 +74,11 @@
                     <div class="transform_slide__container">
                         <p>Translate-X</p>
         
-                        <input type="range" min="-250" max="250" value="0" class="slider" id="trans_x_val">
+                        <input type="range" min="-350" max="350" value="0" class="trans_slider" id="trans_x_val">
                         <output id="trans_x_output">0</output>
         
                         <p>Translate-Y</p>
-                        <input type="range" min="-250" max="250" value="0" class="slider" id="trans_y_val">
+                        <input type="range" min="-350" max="350" value="0" class="trans_slider" id="trans_y_val">
                         <output id="trans_y_output">0</output>
         
                         <p>Rotation</p>

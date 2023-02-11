@@ -3,7 +3,6 @@ import { WebGLUtils } from './helpers/webgl-utils.js';
 import { createProgramFromScratch, vSource, fSource } from './helpers/shader.js';
 
 // Helpers & Utils
-import { flatten, dec_hex, hex_dec, atan3, norm, euclideanDistance } from './helpers/utility.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, CMAP } from './helpers/const.js';
 
 // Models
@@ -56,7 +55,10 @@ canvas.addEventListener("mousemove", function(e) {
             object.setVertexCoordinate(2,x,y);
             object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
         } else if (modelChoice == "square") {
-            object.moveVertex(0, [x,y]);
+            // object.setVertexCoordinate(1,x,object.getVertexCoor(0)[1]);
+            // object.setVertexCoordinate(2,x,y);
+            // object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
+            object.moveVertex([x,y]);
         } else if (modelChoice == "line") {
             
         } else if (modelChoice == "polygon") {
@@ -97,9 +99,10 @@ canvas.addEventListener('mousedown', (e) => {
     } else if (modelChoice == "square") {
         if (!isDrawing){
             let square = new Square(squareID++);
+
+            square.vertices[0].coordinate = [x,y];
             square.setColor(CMAP.get(colorChoice));
             objects.push(square);
-            console.log(objects[objects.length-1].vertices)
             isDrawing = true;
         } else{
             isDrawing = false;
@@ -148,6 +151,7 @@ if (existing_model.value == "none") {
     document.getElementById('trans_y_val').disabled = true;
     document.getElementById('rotate_val').disabled = true;
     document.getElementById('dilatation_val').disabled = true;
+    document.getElementById('edit_color_choice').disabled = true;
 }
 
 existing_model.addEventListener('change', (e) => {
@@ -161,7 +165,8 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById('trans_y_val').disabled = false;
         document.getElementById('rotate_val').disabled = false;
         document.getElementById('dilatation_val').disabled = false;
-    
+        document.getElementById('edit_color_choice').disabled = false;
+
         // update current size
         document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
         document.getElementById('width_output').textContent = selectedModel.getWidth() / 2 * CANVAS_WIDTH;        
@@ -175,6 +180,8 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById("trans_x_output").textContent = x;
         document.getElementById("trans_y_val").value = y;
         document.getElementById("trans_y_output").textContent = y;
+        document.getElementById("rotate_val").value = selectedModel.rotation;
+        document.getElementById("rotate_output").value = selectedModel.rotation;
 
 
     } else if (selectedModel instanceof Square) {
@@ -186,6 +193,7 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById('trans_y_val').disabled = false;
         document.getElementById('rotate_val').disabled = false;
         document.getElementById('dilatation_val').disabled = false;
+        document.getElementById('edit_color_choice').disabled = false;
 
         // update current size
         document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
@@ -198,7 +206,10 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById("trans_x_output").textContent = x;
         document.getElementById("trans_y_val").value = y;
         document.getElementById("trans_y_output").textContent = y;
-
+        
+        // update rotation angle
+        document.getElementById("rotate_val").value = selectedModel.rotation;
+        document.getElementById("rotate_output").value = selectedModel.rotation;
 
     } else if (selectedModel instanceof Line) {
         // TODO: implement line
@@ -265,3 +276,10 @@ dilatationSlider.addEventListener( 'input' , (e) => {
     document.getElementById('dilatation_output').textContent = e.target.value
     objects[existing_model.value].dilate(e.target.value)
 })
+
+
+/* --------- Color Editing Area --------- */
+const modelColor = document.getElementById('edit_color_choice');
+modelColor.addEventListener('change', (e) => {
+    objects[existing_model.value].setColor(CMAP.get(e.target.value));
+});
