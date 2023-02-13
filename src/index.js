@@ -25,8 +25,7 @@ var lineID = 0
 
 /* ----------- Initialization -----------------------------------------------------------*/
 const gl = WebGLUtils.setupWebGL(canvas);
-if ( !gl ) { alert( "WebGL isn't available" ); }
-
+if ( !gl ) { alert( "Ur browser doesn't support WebGL tot" ); }
 
 
 // set size and scale
@@ -42,7 +41,7 @@ document.getElementById("trans_y_val").setAttribute("max", CANVAS_HEIGHT / 2);
 
 // initialize program
 gl.viewport(0, 0, canvas.width, canvas.height);
-gl.clearColor(0.8, 0.8, 0.8, 1.0);
+gl.clearColor(0.8, 0.8, 1, 1.0);
 const program = createProgramFromScratch(gl, vSource, fSource);
 gl.useProgram(program);
 
@@ -70,7 +69,7 @@ canvas.addEventListener("mousemove", function(e) {
             // object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
             object.moveVertex([x,y]);
         } else if (modelChoice == "line") {
-            
+            object.setVertexCoordinate(1,x,y);         
         } else if (modelChoice == "polygon") {
             
         }
@@ -121,7 +120,18 @@ canvas.addEventListener('mousedown', (e) => {
         }
         
     } else if (modelChoice == "line") {
-        
+        if (!isDrawing){
+            let line = new Line(lineID++);
+            line.vertices[0].coordinate = [x,y];
+            line.vertices[1].coordinate = [x,y];
+            line.setColor(CMAP.get(colorChoice));
+            objects.push(line);
+            isDrawing = true;
+        } else{
+            isDrawing = false;
+            objects[objects.length-1].computeCenter();
+            updateModelList();
+        }
     } else if (modelChoice == "polygon") {
         
     }
@@ -150,7 +160,7 @@ const render = () => {
 
 render();
 
-    
+
 
 
 const existing_model = document.getElementById('model_list');
@@ -194,6 +204,7 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById("rotate_output").value = selectedModel.rotation;
 
 
+
     } else if (selectedModel instanceof Square) {
 
         // Update option accessibility
@@ -221,8 +232,33 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById("rotate_val").value = selectedModel.rotation;
         document.getElementById("rotate_output").value = selectedModel.rotation;
 
+
+
     } else if (selectedModel instanceof Line) {
-        // TODO: implement line
+        // Update option accessibility
+        document.getElementById('width_val').disabled = false;
+        document.getElementById('height_val').disabled = false;
+        document.getElementById('trans_x_val').disabled = false;
+        document.getElementById('trans_y_val').disabled = false;
+        document.getElementById('rotate_val').disabled = false;
+        document.getElementById('dilatation_val').disabled = false;
+        document.getElementById('edit_color_choice').disabled = false;
+
+        // update current size
+        document.getElementById('width_val').value = selectedModel.getWidth() / 2 * CANVAS_WIDTH;
+        document.getElementById('width_output').textContent = selectedModel.getWidth() / 2 * CANVAS_WIDTH;        
+        document.getElementById('height_val').value = selectedModel.getHeight() / 2 * CANVAS_HEIGHT;
+        document.getElementById('height_output').textContent =  selectedModel.getHeight() / 2 * CANVAS_HEIGHT;
+
+        // update current position in canvas
+        let x = selectedModel.getCenter()[0] / 2 * CANVAS_WIDTH;
+        let y = selectedModel.getCenter()[1] / 2 * CANVAS_HEIGHT;
+        document.getElementById("trans_x_val").value = x;
+        document.getElementById("trans_x_output").textContent = x;
+        document.getElementById("trans_y_val").value = y;
+        document.getElementById("trans_y_output").textContent = y;
+        document.getElementById("rotate_val").value = selectedModel.rotation;
+        document.getElementById("rotate_output").value = selectedModel.rotation;
     } else if (selectedModel instanceof Polygon) {
         // TODO: implement polygon
     }

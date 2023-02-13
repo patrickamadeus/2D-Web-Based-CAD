@@ -128,7 +128,12 @@ export class Model {
         gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vColor);
     
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
+        if(this.name == `Line_${this.id}`){
+            gl.drawArrays(gl.LINES, 0, vertices.length); 
+        }
+        else{
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
+        }        
     }
 }
 
