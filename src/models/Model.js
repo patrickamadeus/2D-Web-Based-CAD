@@ -10,6 +10,14 @@ export class Model {
         this.id = id;
     }
 
+    copy(obj) {
+        this.vertices = obj.vertices;
+        this.name = obj.name;
+        this.center = obj.center;
+        this.rotation = obj.rotation;
+        this.dilatation = obj.dilatation;
+    }
+
     getVertexCoor = (id) => {
         return this.vertices[id].coordinate;
     }

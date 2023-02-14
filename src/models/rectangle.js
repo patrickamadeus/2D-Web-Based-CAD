@@ -24,6 +24,15 @@ export class Rectangle extends Model {
         this.name = `Rectangle_${id}`;
     }
 
+    copy(obj) {
+        super.copy(obj);
+        this.setWidth(obj.getWidth());
+        this.setHeight(obj.getHeight());
+        this.computeCenter();
+        this.shape = 'rectangle';
+        this.name = obj.name;
+    }
+
     getWidth = () => {
         return euclideanDistance(this.vertices[1].coordinate, this.vertices[0].coordinate);
     }

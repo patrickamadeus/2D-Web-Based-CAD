@@ -12,6 +12,13 @@ export class Square extends Model {
         this.name = `Square_${id}`;
     }
 
+    copy(obj) {
+        super.copy(obj);
+        // this.setWidth(obj.getWidth());
+        this.shape = 'square';
+        this.name = obj.name;
+    }
+
     getWidth = () => {
         return euclideanDistance(this.vertices[1].coordinate, this.vertices[0].coordinate);
     }

@@ -340,5 +340,51 @@ exportButton.addEventListener('click', (e) => {
 });
 
 
-const importFile = document.getElementById('import_file');
+const importFileContainer = document.getElementById('import_file');
 const importButton = document.getElementById('import_button');
+
+if (importFileContainer.files.length == 0){
+    importButton.disabled = true;
+}
+
+// File Event Listener
+importFileContainer.addEventListener('change', (e) => {
+    if (importFileContainer.files.length > 0) {
+        importButton.disabled = false;
+    } else{
+        importButton.disabled = true;
+    }
+})
+
+importButton.addEventListener('click' , (e) => {
+    importFile(importFileContainer.files[0]);
+
+    // delete import filecontainer files
+    importFileContainer.value = '';
+    importButton.disabled = true;
+})
+
+
+// IMPORT
+const importFile = (file) => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const toAppend = JSON.parse(e.target.result);
+  
+      for (let i = 0; i < toAppend.length; i++) {
+        if (toAppend[i].shape == 'line') {
+          objects.push(new Line(lineID++));
+        } else if (toAppend[i].shape == 'square') {
+          objects.push(new Square(squareID++));
+        } else if (toAppend[i].shape == 'rectangle') {
+          objects.push(new Rectangle(rectangleID++));
+        } else if (toAppend[i].shape == 'polygon') {
+          objects.push(new Polygon(polygonID++));
+        }
+        objects[objects.length - 1].copy(toAppend[i]);
+      }
+      updateModelList();
+    };
+
+    reader.readAsText(file);
+}
