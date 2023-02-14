@@ -45,4 +45,15 @@ export class Line extends Model {
 
         this.computeCenter();
     }
+
+    getRotatedIdiot = () => {
+        var CosX = this.vertices[1].coordinate[0] - this.vertices[0].coordinate[0];
+        var SinY = this.vertices[1].coordinate[1] - this.vertices[0].coordinate[1];
+
+        if(-Math.atan2(SinY, CosX) < 0){
+            return (-Math.atan2(SinY, CosX) / Math.PI * 180) + 360;
+        }else{
+            return -Math.atan2(SinY, CosX) / Math.PI * 180;
+        }
+    }
 }

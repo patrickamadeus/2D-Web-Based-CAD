@@ -69,7 +69,7 @@ canvas.addEventListener("mousemove", function(e) {
             // object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
             object.moveVertex([x,y]);
         } else if (modelChoice == "line") {
-            object.setVertexCoordinate(1,x,y);         
+            object.setVertexCoordinate(1,x,y);                 
         } else if (modelChoice == "polygon") {
             
         }
@@ -259,6 +259,13 @@ existing_model.addEventListener('change', (e) => {
         document.getElementById("trans_y_output").textContent = y;
         document.getElementById("rotate_val").value = selectedModel.rotation;
         document.getElementById("rotate_output").value = selectedModel.rotation;
+
+        // update rotation angle
+        document.getElementById("rotate_val").value = selectedModel.getRotatedIdiot();
+        document.getElementById("rotate_output").value = selectedModel.getRotatedIdiot();
+
+
+
     } else if (selectedModel instanceof Polygon) {
         // TODO: implement polygon
     }
