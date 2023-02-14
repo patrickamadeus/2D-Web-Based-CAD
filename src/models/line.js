@@ -9,6 +9,14 @@ export class Line extends Model {
         this.name = `Line_${id}`;
     }
 
+    copy(obj){
+        // TODO: Configure copy constructor line
+        super.copy(obj);
+        // this.setWidth(obj.getWidth());
+        // this.shape = 'line';
+        // this.name = obj.name;
+    }
+
     getWidth = () => {
         return Math.abs(this.vertices[0].coordinate[0] - this.vertices[1].coordinate[0]);
     }
