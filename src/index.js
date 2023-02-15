@@ -64,10 +64,7 @@ canvas.addEventListener("mousemove", function(e) {
             object.setVertexCoordinate(2,x,y);
             object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
         } else if (modelChoice == "square") {
-            // object.setVertexCoordinate(1,x,object.getVertexCoor(0)[1]);
-            // object.setVertexCoordinate(2,x,y);
-            // object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
-            object.moveVertex([x,y]);
+            object.moveVertex2(2, [x,y]); // default kanan bawah
         } else if (modelChoice == "line") {
             object.setVertexCoordinate(1,x,y);                 
         } else if (modelChoice == "polygon") {
@@ -110,6 +107,7 @@ canvas.addEventListener('mousedown', (e) => {
             let square = new Square(squareID++);
 
             square.vertices[0].coordinate = [x,y];
+            square.center.coordinate = [x,y]
             square.setColor(CMAP.get(colorChoice));
             objects.push(square);
             isDrawing = true;

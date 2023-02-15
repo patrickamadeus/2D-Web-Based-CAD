@@ -48,28 +48,38 @@ export class Square extends Model {
             this.vertices[3].coordinate[0],this.vertices[3].coordinate[1],angle, -1);
     }
 
-    moveVertex = (coor) => {
-      const p0 = this.vertices[0].coordinate;
-      const p2 = coor;
-      const dist = euclideanDistance(p0, p2) / Math.sqrt(2);
-      const baseAngle = Math.atan(-1);
-      const angle = atan3(p0,p2);
-      const diff = baseAngle - angle;
+    moveVertex = (i,coor) => {
+        let dp = [];
+        if      (i == 2){ dp = [0,1,2,3] } 
+        else if (i == 1){ dp = [3,0,1,2] }
+        else if (i == 0){ dp = [2,3,0,1] }
+        else if (i == 3){ dp = [1,2,3,0] }
 
-      let p1  = [p0[0] + dist, p0[1]];
-      let p3 = [p0[0], p0[1] - dist];
+        const c = this.center.coordinate
+        const p2 = coor;
+        
+        const dist = euclideanDistance(c, p2) / Math.sqrt(2);
+        const baseAngle = Math.atan(-1);
+        const angle = atan3(c,p2);
+        const diff = baseAngle - angle;
 
-      p1 = rotatePoint(p1[0], p1[1], p0[0], p0[1], diff, -1);
-      p3 = rotatePoint(p3[0], p3[1], p0[0], p0[1], diff, -1);
+        let n_p0 = [c[0] - dist , c[1] + dist]
+        let n_p1  = [c[0] + dist, c[1] + dist];
+        let n_p3 = [c[0] - dist, c[1] - dist];
 
-      this.rotation = diff * 180 / Math.PI;
+        n_p0 = rotatePoint(n_p0[0], n_p0[1], c[0] , c[1] , diff , -1)
+        n_p1 = rotatePoint(n_p1[0], n_p1[1],  c[0] , c[1], diff, -1);
+        n_p3 = rotatePoint(n_p3[0], n_p3[1],  c[0] , c[1], diff, -1);
 
-      if (this.rotation < 0) {
-        this.rotation += 360;
-      }
+        this.rotation = diff * 180 / Math.PI;
 
-      this.vertices[1].coordinate = p1;
-      this.vertices[2].coordinate = p2;
-      this.vertices[3].coordinate = p3;
+        if (this.rotation < 0) {
+            this.rotation += 360;
+          }
+        
+        this.vertices[dp[0]].coordinate = n_p0;
+        this.vertices[dp[1]].coordinate = n_p1;
+        this.vertices[dp[2]].coordinate = p2;
+        this.vertices[dp[3]].coordinate = n_p3;
     }
 };
