@@ -64,7 +64,7 @@ canvas.addEventListener("mousemove", function(e) {
             object.setVertexCoordinate(2,x,y);
             object.setVertexCoordinate(3,object.getVertexCoor(0)[0],y);
         } else if (modelChoice == "square") {
-            object.moveVertex2(2, [x,y]); // default kanan bawah
+            object.moveVertex(2, [x,y]); // default kanan bawah
         } else if (modelChoice == "line") {
             object.setVertexCoordinate(1,x,y);                 
         } else if (modelChoice == "polygon") {
