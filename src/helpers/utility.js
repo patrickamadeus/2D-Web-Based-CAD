@@ -31,6 +31,26 @@ const hex_dec = (hex) => {
     return toReturn;
 };
 
+const sortClockwise = (pArr, c) => {
+    // pArr is array of points
+    let arr = []
+
+    for (let i = 0 ; i < pArr.length ; i++) {
+        const angle = atan3(pArr[i].coordinate, c.coordinate);
+        arr.push([angle, i])
+    }
+
+    arr.sort((a,b) => a[0] > b[0])
+
+    const n_pArr = []
+    for (let i = 0 ; i < arr.length ; i++) {
+        n_pArr.push(pArr[arr[i][1]])
+    }
+
+    return n_pArr
+}
+
+
 function flatten(v) {
     if(v.matrix === true) {
         v = transpose(v);

@@ -338,9 +338,9 @@ modelColor.addEventListener('change', (e) => {
 
 
 /* --------- Import & Export Section --------- */
-const exportFilename = document.getElementById('export_file').value;
 const exportButton = document.getElementById('export_button');
 exportButton.addEventListener('click', (e) => {
+    const exportFilename = document.getElementById('export_file').value;
     exportFile(exportFilename, objects);
 });
 
