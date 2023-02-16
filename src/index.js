@@ -15,6 +15,7 @@ import { Line } from "./models/line.js";
 import { Square } from "./models/square.js";
 import { Rectangle } from "./models/rectangle.js";
 import { Polygon } from "./models/polygon.js";
+import { euclideanDistance } from "./helpers/utility.js";
 
 /* ----------- Global Variables -----------------------------------------------------------*/
 var objects = [];
@@ -59,6 +60,51 @@ const cBuffer = gl.createBuffer();
 var modelChoice;
 var colorChoice;
 
+// mouse up untuk change vertex
+canvas.addEventListener("mouseup", (e) => {
+  isEditing = false;
+  console.log("KELAR");
+});
+
+// mouse move untuk change vertex
+canvas.addEventListener("mousedown", (e) => {
+  let selectedModel = objects[document.getElementById("model_list").value];
+  if (!isDrawing && selectedModel) {
+    let vertices = selectedModel.vertices;
+
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    for (let i = 0; i < vertices.length; i++) {
+      if (euclideanDistance([x, y], vertices[i].coordinate) < 0.05) {
+        console.log("wow lagi sama si ", i);
+        console.log("atas", [x, y]);
+        objects[document.getElementById("model_list").value].vertices[
+          i
+        ].setColor([0, 0, 0, 1]);
+        console.log(
+          objects[document.getElementById("model_list").value].vertices[i]
+        );
+        isEditing = true;
+        break;
+      } else {
+        console.log("GAKENA");
+        console.log("bawah", [x, y]);
+        console.log(
+          objects[document.getElementById("model_list").value].vertices[i]
+        );
+      }
+    }
+  }
+
+  console.log(objects);
+
+  if (isEditing == true) {
+    console.log("xixixixxi");
+  }
+});
+
+// mouse move untuk creating object
 canvas.addEventListener("mousemove", function (e) {
   if (isDrawing) {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
@@ -79,6 +125,7 @@ canvas.addEventListener("mousemove", function (e) {
 });
 
 canvas.addEventListener("mousedown", (e) => {
+  if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
   colorChoice = document.querySelector("#color_choice").value;
 

@@ -130,14 +130,28 @@ export class Model {
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
     const vPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(
+      vPosition,
+      2,
+      gl.FLOAT,
+      false,
+      0, // 6 * Float32Array.BYTES_PER_ELEMENT
+      0
+    );
     gl.enableVertexAttribArray(vPosition);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
     const vColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(
+      vColor,
+      4,
+      gl.FLOAT,
+      false,
+      0, // 6 * Float32Array.BYTES_PER_ELEMENT
+      0 // 2 * Float32Array.BYTES_PER_ELEMENT
+    );
     gl.enableVertexAttribArray(vColor);
 
     if (this.name == `Line_${this.id}`) {
