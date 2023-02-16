@@ -60,11 +60,10 @@ const cBuffer = gl.createBuffer();
 var modelChoice;
 var colorChoice;
 
-// mouse up untuk change vertex
-canvas.addEventListener("mouseup", (e) => {
-  isEditing = false;
-  console.log("KELAR");
-});
+// // mouse up untuk change vertex
+// canvas.addEventListener("mouseup", (e) => {
+//   isEditing = false;
+// });
 
 // mouse move untuk change vertex
 canvas.addEventListener("mousedown", (e) => {
@@ -79,28 +78,14 @@ canvas.addEventListener("mousedown", (e) => {
       if (euclideanDistance([x, y], vertices[i].coordinate) < 0.05) {
         console.log("wow lagi sama si ", i);
         console.log("atas", [x, y]);
-        objects[document.getElementById("model_list").value].vertices[
-          i
-        ].setColor([0, 0, 0, 1]);
-        console.log(
-          objects[document.getElementById("model_list").value].vertices[i]
-        );
+        objects[document.getElementById("model_list").value].vertices[i].setColor([0, 0, 0, 1]);
         isEditing = true;
         break;
       } else {
-        console.log("GAKENA");
-        console.log("bawah", [x, y]);
-        console.log(
-          objects[document.getElementById("model_list").value].vertices[i]
-        );
+        console.log("gakena")
+        console.log(objects[document.getElementById("model_list").value].vertices[i]);
       }
     }
-  }
-
-  console.log(objects);
-
-  if (isEditing == true) {
-    console.log("xixixixxi");
   }
 });
 
@@ -327,9 +312,9 @@ existing_model.addEventListener("change", (e) => {
 
     // update rotation angle
     document.getElementById("rotate_val").value =
-      selectedModel.getRotatedIdiot();
+      selectedModel.rotation
     document.getElementById("rotate_output").value =
-      selectedModel.getRotatedIdiot();
+      selectedModel.rotation
   } else if (selectedModel instanceof Polygon) {
     // TODO: implement polygon
   }

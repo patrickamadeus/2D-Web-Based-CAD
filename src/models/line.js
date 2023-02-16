@@ -1,3 +1,4 @@
+import { atan3 } from "../helpers/utility.js";
 import { Model, Point } from "./Model.js";
 
 export class Line extends Model {
@@ -27,11 +28,6 @@ export class Line extends Model {
 
     setWidth = (w) => {
         const diff = (w - this.getWidth()) / 2;
-        const angle = this.rotation * Math.PI / 180;
-    }
-
-    setWidth = (w) => {
-        const diff = (w - this.getWidth()) / 2;
 
         this.vertices[0].coordinate[0] -= diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[0].coordinate[1] += diff * Math.sin(this.rotation * Math.PI / 180);
@@ -54,14 +50,13 @@ export class Line extends Model {
         this.computeCenter();
     }
 
-    getRotatedIdiot = () => {
-        var CosX = this.vertices[1].coordinate[0] - this.vertices[0].coordinate[0];
-        var SinY = this.vertices[1].coordinate[1] - this.vertices[0].coordinate[1];
+    setVertexCoordinate = (id, x, y) => {
+        this.vertices[id].coordinate = [x, y];
+        let angle = 360 - atan3(this.vertices[0].coordinate, this.vertices[1].coordinate) * 180 / Math.PI;
 
-        if(-Math.atan2(SinY, CosX) < 0){
-            return (-Math.atan2(SinY, CosX) / Math.PI * 180) + 360;
-        }else{
-            return -Math.atan2(SinY, CosX) / Math.PI * 180;
+        if (angle >360) {
+            angle -= 360;
         }
-    }
+        this.rotation = angle;
+    };
 }
