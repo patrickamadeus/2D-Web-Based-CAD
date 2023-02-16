@@ -41,11 +41,11 @@ export class Line extends Model {
     setHeight = (h) => {
         const diff = (h - this.getHeight()) / 2;
 
-        this.vertices[0].coordinate[1] += diff * Math.cos(this.rotation * Math.PI / 180);
+        this.vertices[0].coordinate[1] -= diff * Math.cos(this.rotation * Math.PI / 180);
         this.vertices[0].coordinate[0] += diff * Math.sin(this.rotation * Math.PI / 180);
 
         this.vertices[1].coordinate[1] += diff * Math.cos(this.rotation * Math.PI / 180);
-        this.vertices[1].coordinate[0] += diff * Math.sin(this.rotation * Math.PI / 180);
+        this.vertices[1].coordinate[0] -= diff * Math.sin(this.rotation * Math.PI / 180);
 
         this.computeCenter();
     }
