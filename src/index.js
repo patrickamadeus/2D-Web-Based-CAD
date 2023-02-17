@@ -143,7 +143,25 @@ canvas.addEventListener("mousemove", function (e) {
     } else if (modelChoice == "line") {
       object.setVertexCoordinate(1, x, y);
     } else if (modelChoice == "polygon") {
+      object.setVertexCoordinate(object.vertices.length - 1, x, y);
     }
+  }
+});
+
+
+// POLYGON STOPPER
+canvas.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+  if (isDrawingModel && modelChoice == "polygon") {
+    let object = objects[objects.length - 1];
+    object.vertices.pop();
+    object.vertices.pop();
+
+    object.vertices.push(object.vertices[0]);
+    object.vertices.push(object.vertices[1]);
+
+    isDrawingModel = false;
+    updateModelList();
   }
 });
 
@@ -208,7 +226,7 @@ canvas.addEventListener("mousemove", (e) => {
     document.getElementById("width_output").textContent =
       (object.getWidth() / 2) * CANVAS_WIDTH;
   } else if (object instanceof Polygon) {
-    // TODO: implement polygon
+    // Do nothing
   }
 });
 
@@ -229,6 +247,15 @@ canvas.addEventListener("mousedown", (e) => {
     alert("You can only draw 5 objects!");
     return;
   }
+
+  document.getElementById("width_val").disabled = true;
+  document.getElementById("height_val").disabled = true;
+  document.getElementById("trans_x_val").disabled = true;
+  document.getElementById("trans_y_val").disabled = true;
+  document.getElementById("rotate_val").disabled = true;
+  document.getElementById("dilatation_val").disabled = true;
+  document.getElementById("edit_color_choice").disabled = true;
+  document.getElementById("vertex_color_choice").disabled = true;
 
   if (modelChoice == "rectangle") {
     if (!isDrawingModel) {
@@ -271,6 +298,16 @@ canvas.addEventListener("mousedown", (e) => {
       updateModelList();
     }
   } else if (modelChoice == "polygon") {
+    if(!isDrawingModel){
+      let polygon = new Polygon(polygonID++);
+      polygon.addVertex(x, y, CMAP.get(colorChoice));
+      polygon.addVertex(x, y, CMAP.get(colorChoice));
+      objects.push(polygon);
+      isDrawingModel = true;
+    } else{
+      let polygon = objects[objects.length - 1];
+      polygon.addVertex(x, y, CMAP.get(colorChoice));
+    }
   }
 });
 
