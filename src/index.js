@@ -149,21 +149,6 @@ canvas.addEventListener("mousemove", function (e) {
 });
 
 
-// POLYGON STOPPER
-canvas.addEventListener("contextmenu", (e) => {
-  e.preventDefault();
-  if (isDrawingModel && modelChoice == "polygon") {
-    let object = objects[objects.length - 1];
-    object.vertices.pop();
-    object.vertices.pop();
-
-    object.vertices.push(object.vertices[0]);
-    object.vertices.push(object.vertices[1]);
-
-    isDrawingModel = false;
-    updateModelList();
-  }
-});
 
 /*
 █▀▄ █▄█ █▄░█ ▄▀█ █▀▄▀█ █ █▀▀   █░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀
@@ -204,27 +189,27 @@ canvas.addEventListener("mousemove", (e) => {
   if (object instanceof Rectangle) {
     // Update RECTANGLE accessibility
     document.getElementById("width_val").value =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("height_val").value =
-      (object.getHeight() / 2) * CANVAS_HEIGHT;
+    (object.getHeight() / 2) * CANVAS_HEIGHT;
     document.getElementById("height_output").textContent =
-      (object.getHeight() / 2) * CANVAS_HEIGHT;
+    (object.getHeight() / 2) * CANVAS_HEIGHT;
   } else if (object instanceof Square) {
     // Update SQUARE accessibility
     document.getElementById("height_val").disabled = true;
     document.getElementById("width_val").value =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
   } else if (object instanceof Line) {
     // Update LINE accessibility
     document.getElementById("height_val").disabled = true;
     document.getElementById("width_val").value =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-      (object.getWidth() / 2) * CANVAS_WIDTH;
+    (object.getWidth() / 2) * CANVAS_WIDTH;
   } else if (object instanceof Polygon) {
     // Do nothing
   }
@@ -234,20 +219,20 @@ canvas.addEventListener("mousedown", (e) => {
   if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
   colorChoice = document.querySelector("#color_choice").value;
-
+  
   let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-
+  
   if (modelChoice == "none" || colorChoice == "none") {
     alert("Please choose model and color");
     return;
   }
-
+  
   if (!isDrawingModel && objects.length == 5) {
     alert("You can only draw 5 objects!");
     return;
   }
-
+  
   document.getElementById("width_val").disabled = true;
   document.getElementById("height_val").disabled = true;
   document.getElementById("trans_x_val").disabled = true;
@@ -256,11 +241,11 @@ canvas.addEventListener("mousedown", (e) => {
   document.getElementById("dilatation_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
-
+  
   if (modelChoice == "rectangle") {
     if (!isDrawingModel) {
       let rectangle = new Rectangle(rectangleID++);
-
+      
       rectangle.vertices[0].coordinate = [x, y];
       rectangle.setColor(CMAP.get(colorChoice));
       objects.push(rectangle);
@@ -273,7 +258,7 @@ canvas.addEventListener("mousedown", (e) => {
   } else if (modelChoice == "square") {
     if (!isDrawingModel) {
       let square = new Square(squareID++);
-
+      
       square.vertices[0].coordinate = [x, y];
       square.center.coordinate = [x, y];
       square.setColor(CMAP.get(colorChoice));
@@ -310,6 +295,22 @@ canvas.addEventListener("mousedown", (e) => {
     }
   }
 });
+
+
+// POLYGON STOPPER
+canvas.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+  if (isDrawingModel && modelChoice == "polygon") {
+    let object = objects[objects.length - 1];
+    object.vertices.pop();
+    object.vertices.pop();
+
+    isDrawingModel = false;
+    objects[objects.length - 1].computeCenter();
+    updateModelList();
+  }
+});
+
 
 var modelList = document.getElementById("model_list");
 const updateModelList = () => {
@@ -403,7 +404,8 @@ existing_model.addEventListener("change", (e) => {
     document.getElementById("width_output").textContent =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
   } else if (selectedModel instanceof Polygon) {
-    // TODO: implement polygon
+    document.getElementById("width_val").disabled = true;
+    document.getElementById("height_val").disabled = true;
   }
 });
 
@@ -450,7 +452,7 @@ translateSliderY.addEventListener("input", (e) => {
   let y = objects[existing_model.value].getCenter()[1];
 
   objects[existing_model.value].setTranslateY(
-    (e.target.value / CANVAS_WIDTH) * 2 - y
+    (e.target.value / CANVAS_HEIGHT) * 2 - y
   );
 });
 
