@@ -25,6 +25,7 @@ var canvas = document.querySelector("#canvas");
 var isDrawingModel = false;
 var isSelectingVertex = false;
 var isDraggingVertex = false;
+var isAddingVertex = false;
 
 // Global object ID
 var rectangleID = 0;
@@ -82,6 +83,10 @@ canvas.addEventListener("mousedown", (e) => {
           vertices[i].color.toString()
         );
 
+        if (selectedModel instanceof Polygon){
+          document.getElementById("delete_vertex_button").disabled = false;
+        }
+
         isSelectingVertex = true;
         isDraggingVertex = true;
         break;
@@ -95,6 +100,8 @@ canvas.addEventListener("mousedown", (e) => {
         document.getElementById("vertex_color_choice").value = "none";
       }
     }
+
+    console.log("Vertex Choice: " + vertexChoice)
   }
 });
 
@@ -311,6 +318,44 @@ canvas.addEventListener("contextmenu", (e) => {
   }
 });
 
+// POLYGON VERTEX DELETION
+document.getElementById("delete_vertex_button").addEventListener("click", (e) => {
+    let object = objects[document.getElementById("model_list").value];
+    let oldVertices = object.vertices;
+    let newVertices = []
+
+    for (let i = 0; i < oldVertices.length; i++) {
+      if (i != vertexChoice) {
+        newVertices.push(oldVertices[i]);
+      }
+    }
+
+    object.vertices = newVertices;
+    object.computeCenter();
+});
+
+// POLYGON VERTEX ADDITION
+let addVertexButton = document.getElementById("add_vertex_button")
+addVertexButton.addEventListener("click", (e) => {
+  if(isAddingVertex){
+    isAddingVertex = false;
+    addVertexButton.textContent = 'Add Vertex';
+  }else{
+    isAddingVertex = true;
+    addVertexButton.textContent = 'Cancel Add Vertex';
+  }
+});
+
+canvas.addEventListener("mousedown", (e) => {
+  if(isAddingVertex){
+    let object = objects[document.getElementById("model_list").value];
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    object.newVertex([x,y], CMAP.get(colorChoice));
+    object.computeCenter();
+  }
+})
+
 
 var modelList = document.getElementById("model_list");
 const updateModelList = () => {
@@ -406,6 +451,7 @@ existing_model.addEventListener("change", (e) => {
   } else if (selectedModel instanceof Polygon) {
     document.getElementById("width_val").disabled = true;
     document.getElementById("height_val").disabled = true;
+    document.getElementById("add_vertex_button").disabled = false;
   }
 });
 

@@ -1,3 +1,4 @@
+import { euclideanDistance } from "../helpers/utility.js";
 import { Model, Point } from "./Model.js";
 
 export class Polygon extends Model {
@@ -21,5 +22,35 @@ export class Polygon extends Model {
 
     moveVertex = (id, coordinate) => {
         this.vertices[id].coordinate = coordinate;
+    }
+
+    newVertex = (coordinate) => {
+        // get vertices with smallest distance to coordinate
+        let minDistance = 10000;
+        let minDistanceId = -1;
+        for (let i = 0; i < this.vertices.length; i++) {
+            let distance = euclideanDistance(this.vertices[i].coordinate, coordinate);
+            if (distance < minDistance) {
+                minDistance = distance;
+                minDistanceId = i;
+            }
+        }
+
+        // compate left and right neighbors
+        let leftId = (minDistanceId - 1);
+        if (leftId < 0) {
+            leftId = this.vertices.length - 1;
+        }
+
+        let rightId = (minDistanceId + 1) % this.vertices.length;
+        let leftDistance = euclideanDistance(this.vertices[leftId].coordinate, coordinate);
+        let rightDistance = euclideanDistance(this.vertices[rightId].coordinate, coordinate);
+
+        // insert vertex
+        if (leftDistance < rightDistance) {
+            this.vertices.splice(leftId + 1, 0, new Point(coordinate, this.vertices[minDistanceId].color, this.vertices.length));
+        } else {
+            this.vertices.splice(rightId, 0, new Point(coordinate, this.vertices[minDistanceId].color, this.vertices.length));
+        }
     }
 }
