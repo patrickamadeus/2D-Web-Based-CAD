@@ -7,7 +7,7 @@ import {
 } from "./helpers/shader.js";
 
 // Helpers & Utils
-import { CANVAS_HEIGHT, CANVAS_WIDTH, CMAP } from "./helpers/const.js";
+import { CANVAS_HEIGHT, CANVAS_WIDTH, CMAP, RCMAP } from "./helpers/const.js";
 import { exportFile } from "./helpers/load.js";
 
 // Models
@@ -17,11 +17,16 @@ import { Rectangle } from "./models/rectangle.js";
 import { Polygon } from "./models/polygon.js";
 import { euclideanDistance } from "./helpers/utility.js";
 
-/* ----------- Global Variables -----------------------------------------------------------*/
+// Global object array
 var objects = [];
 var canvas = document.querySelector("#canvas");
-var isDrawing = false;
-var isEditing = false;
+
+// Global event state
+var isDrawingModel = false;
+var isSelectingVertex = false;
+var isDraggingVertex = false;
+
+// Global object ID
 var rectangleID = 0;
 var polygonID = 0;
 var squareID = 0;
@@ -56,42 +61,75 @@ gl.useProgram(program);
 const vBuffer = gl.createBuffer();
 const cBuffer = gl.createBuffer();
 
-/* ----------- Canvas Event Listener -----------------------------------------------------------*/
 var modelChoice;
 var colorChoice;
+var vertexChoice;
 
-// // mouse up untuk change vertex
-// canvas.addEventListener("mouseup", (e) => {
-//   isEditing = false;
-// });
-
-// mouse move untuk change vertex
+//* ------------------- Change Vertex Properties Segment -------------------------------*/
 canvas.addEventListener("mousedown", (e) => {
   let selectedModel = objects[document.getElementById("model_list").value];
-  if (!isDrawing && selectedModel) {
+  if (!isDrawingModel && selectedModel) {
     let vertices = selectedModel.vertices;
-
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     for (let i = 0; i < vertices.length; i++) {
+      // If there exists a vertex within 0.05 distance from mouse click
       if (euclideanDistance([x, y], vertices[i].coordinate) < 0.05) {
-        console.log("wow lagi sama si ", i);
-        console.log("atas", [x, y]);
-        objects[document.getElementById("model_list").value].vertices[i].setColor([0, 0, 0, 1]);
-        isEditing = true;
+        vertexChoice = i;
+        document.getElementById("vertex_color_choice").disabled = false;
+        document.getElementById("vertex_color_choice").value = RCMAP.get(
+          vertices[i].color.toString()
+        );
+
+        isSelectingVertex = true;
+        isDraggingVertex = true;
         break;
-      } else {
-        console.log("gakena")
-        console.log(objects[document.getElementById("model_list").value].vertices[i]);
+      }
+
+      // ...if not, then reset the vertex selection
+      else {
+        vertexChoice = -1;
+        isSelectingVertex = false;
+        document.getElementById("vertex_color_choice").disabled = true;
+        document.getElementById("vertex_color_choice").value = "none";
       }
     }
   }
 });
 
+canvas.addEventListener("mousemove", (e) => {
+  if (isDraggingVertex) {
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    let selectedModel = objects[document.getElementById("model_list").value];
+    if (selectedModel) {
+      selectedModel.moveVertex(vertexChoice, [x, y]);
+    }
+  }
+});
+
+canvas.addEventListener("mouseup", (e) => {
+  if (isSelectingVertex) {
+    isDraggingVertex = false;
+  }
+});
+
+// Change vertex color
+const vertexColorChoice = document.getElementById("vertex_color_choice");
+vertexColorChoice.addEventListener("change", (e) => {
+  let selectedModel = objects[document.getElementById("model_list").value];
+  if (selectedModel) {
+    objects[document.getElementById("model_list").value].vertices[
+      vertexChoice
+    ].color = CMAP.get(vertexColorChoice.value);
+  }
+});
+
 // mouse move untuk creating object
 canvas.addEventListener("mousemove", function (e) {
-  if (isDrawing) {
+  if (isDrawingModel) {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
     let object = objects[objects.length - 1];
@@ -109,6 +147,71 @@ canvas.addEventListener("mousemove", function (e) {
   }
 });
 
+/*
+█▀▄ █▄█ █▄░█ ▄▀█ █▀▄▀█ █ █▀▀   █░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀
+█▄▀ ░█░ █░▀█ █▀█ █░▀░█ █ █▄▄   █▄█ █▀▀ █▄▀ █▀█ ░█░ ██▄
+*/
+canvas.addEventListener("mousemove", (e) => {
+  let object;
+  if (isDrawingModel) {
+    object = objects[objects.length - 1];
+  } else if (!isDrawingModel && isDraggingVertex) {
+    object = objects[document.getElementById("model_list").value];
+  } else {
+    return;
+  }
+  let x = (object.getCenter()[0] / 2) * CANVAS_WIDTH;
+  let y = (object.getCenter()[1] / 2) * CANVAS_HEIGHT;
+
+  // Update base selection access
+  document.getElementById("width_val").disabled = false;
+  document.getElementById("height_val").disabled = false;
+  document.getElementById("trans_x_val").disabled = false;
+  document.getElementById("trans_y_val").disabled = false;
+  document.getElementById("rotate_val").disabled = false;
+  document.getElementById("dilatation_val").disabled = false;
+  document.getElementById("edit_color_choice").disabled = false;
+
+  // Update position
+  document.getElementById("trans_x_val").value = x;
+  document.getElementById("trans_x_output").textContent = x;
+  document.getElementById("trans_y_val").value = y;
+  document.getElementById("trans_y_output").textContent = y;
+
+  // update rotation angle
+  document.getElementById("rotate_val").value = object.rotation;
+  document.getElementById("rotate_output").value = object.rotation;
+
+  // Special case for each shape
+  if (object instanceof Rectangle) {
+    // Update RECTANGLE accessibility
+    document.getElementById("width_val").value =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+    document.getElementById("width_output").textContent =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+    document.getElementById("height_val").value =
+      (object.getHeight() / 2) * CANVAS_HEIGHT;
+    document.getElementById("height_output").textContent =
+      (object.getHeight() / 2) * CANVAS_HEIGHT;
+  } else if (object instanceof Square) {
+    // Update SQUARE accessibility
+    document.getElementById("height_val").disabled = true;
+    document.getElementById("width_val").value =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+    document.getElementById("width_output").textContent =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+  } else if (object instanceof Line) {
+    // Update LINE accessibility
+    document.getElementById("height_val").disabled = true;
+    document.getElementById("width_val").value =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+    document.getElementById("width_output").textContent =
+      (object.getWidth() / 2) * CANVAS_WIDTH;
+  } else if (object instanceof Polygon) {
+    // TODO: implement polygon
+  }
+});
+
 canvas.addEventListener("mousedown", (e) => {
   if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
@@ -122,48 +225,48 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (!isDrawing && objects.length == 5) {
+  if (!isDrawingModel && objects.length == 5) {
     alert("You can only draw 5 objects!");
     return;
   }
 
   if (modelChoice == "rectangle") {
-    if (!isDrawing) {
+    if (!isDrawingModel) {
       let rectangle = new Rectangle(rectangleID++);
 
       rectangle.vertices[0].coordinate = [x, y];
       rectangle.setColor(CMAP.get(colorChoice));
       objects.push(rectangle);
-      isDrawing = true;
+      isDrawingModel = true;
     } else {
-      isDrawing = false;
+      isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
       updateModelList();
     }
   } else if (modelChoice == "square") {
-    if (!isDrawing) {
+    if (!isDrawingModel) {
       let square = new Square(squareID++);
 
       square.vertices[0].coordinate = [x, y];
       square.center.coordinate = [x, y];
       square.setColor(CMAP.get(colorChoice));
       objects.push(square);
-      isDrawing = true;
+      isDrawingModel = true;
     } else {
-      isDrawing = false;
+      isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
       updateModelList();
     }
   } else if (modelChoice == "line") {
-    if (!isDrawing) {
+    if (!isDrawingModel) {
       let line = new Line(lineID++);
       line.vertices[0].coordinate = [x, y];
       line.vertices[1].coordinate = [x, y];
       line.setColor(CMAP.get(colorChoice));
       objects.push(line);
-      isDrawing = true;
+      isDrawingModel = true;
     } else {
-      isDrawing = false;
+      isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
       updateModelList();
     }
@@ -182,24 +285,18 @@ const updateModelList = () => {
   }
 };
 
-/* ----------- Canvas Rendering -----------------------------------------------------------*/
-const render = () => {
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  for (let i = 0; i < objects.length; i++) {
-    objects[i].render(gl, program, vBuffer, cBuffer);
-  }
-  window.requestAnimFrame(render);
-};
-
-render();
-
 /* New Model Create Selection Section */
 const new_model = document.getElementById("model_choice");
 new_model.addEventListener("change", (e) => {
   document.getElementById("model_list").value = "none";
   document.getElementById("model_list").text = " -- select a model -- ";
+  document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("edit_color_choice").value = "none";
-  document.getElementById("edit_color_choice").text = " -- model color -- ";
+  document.getElementById("edit_color_choice").text =
+    " -- choose existing model -- ";
+  document.getElementById("vertex_color_choice").disabled = true;
+  document.getElementById("vertex_color_choice").value = "none";
+  document.getElementById("vertex_color_choice").text = " -- choose vertex -- ";
 });
 
 /* Existing Model Edit Section */
@@ -212,29 +309,40 @@ if (existing_model.value == "none") {
   document.getElementById("rotate_val").disabled = true;
   document.getElementById("dilatation_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
+  document.getElementById("vertex_color_choice").disabled = true;
 }
 
 existing_model.addEventListener("change", (e) => {
-  let selectedModel = objects[e.target.value];
-
-  // disable CREATE NEW MODEL
+  // Disable create new model access
   document.getElementById("model_choice").value = "none";
-  document.getElementById("model_choice").text = " -- select a model -- ";
   document.getElementById("color_choice").value = "none";
-  document.getElementById("color_choice").text = " -- select a color -- ";
 
+  let selectedModel = objects[e.target.value];
+  let x = (selectedModel.getCenter()[0] / 2) * CANVAS_WIDTH;
+  let y = (selectedModel.getCenter()[1] / 2) * CANVAS_HEIGHT;
+
+  // Update base selection access
+  document.getElementById("width_val").disabled = false;
+  document.getElementById("height_val").disabled = false;
+  document.getElementById("trans_x_val").disabled = false;
+  document.getElementById("trans_y_val").disabled = false;
+  document.getElementById("rotate_val").disabled = false;
+  document.getElementById("dilatation_val").disabled = false;
+  document.getElementById("edit_color_choice").disabled = false;
+
+  // Update position
+  document.getElementById("trans_x_val").value = x;
+  document.getElementById("trans_x_output").textContent = x;
+  document.getElementById("trans_y_val").value = y;
+  document.getElementById("trans_y_output").textContent = y;
+
+  // update rotation angle
+  document.getElementById("rotate_val").value = selectedModel.rotation;
+  document.getElementById("rotate_output").value = selectedModel.rotation;
+
+  // Special case for each shape
   if (selectedModel instanceof Rectangle) {
-    // Update option accessibility
-    document.getElementById("width_val").disabled = false;
-    document.getElementById("height_val").disabled = false;
-    document.getElementById("trans_x_val").disabled = false;
-    document.getElementById("trans_y_val").disabled = false;
-    document.getElementById("rotate_val").disabled = false;
-    document.getElementById("dilatation_val").disabled = false;
-    document.getElementById("edit_color_choice").disabled = false;
-    isDrawing = false;
-
-    // update current size
+    // Update RECTANGLE accessibility
     document.getElementById("width_val").value =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
@@ -243,84 +351,29 @@ existing_model.addEventListener("change", (e) => {
       (selectedModel.getHeight() / 2) * CANVAS_HEIGHT;
     document.getElementById("height_output").textContent =
       (selectedModel.getHeight() / 2) * CANVAS_HEIGHT;
-
-    // update current position in canvas
-    let x = (selectedModel.getCenter()[0] / 2) * CANVAS_WIDTH;
-    let y = (selectedModel.getCenter()[1] / 2) * CANVAS_HEIGHT;
-    document.getElementById("trans_x_val").value = x;
-    document.getElementById("trans_x_output").textContent = x;
-    document.getElementById("trans_y_val").value = y;
-    document.getElementById("trans_y_output").textContent = y;
-    document.getElementById("rotate_val").value = selectedModel.rotation;
-    document.getElementById("rotate_output").value = selectedModel.rotation;
   } else if (selectedModel instanceof Square) {
-    // Update option accessibility
-    document.getElementById("width_val").disabled = false;
+    // Update SQUARE accessibility
     document.getElementById("height_val").disabled = true;
-    document.getElementById("trans_x_val").disabled = false;
-    document.getElementById("trans_y_val").disabled = false;
-    document.getElementById("rotate_val").disabled = false;
-    document.getElementById("dilatation_val").disabled = false;
-    document.getElementById("edit_color_choice").disabled = false;
-
-    // update current size
     document.getElementById("width_val").value =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
-
-    // update current position in canvas
-    let x = (selectedModel.getCenter()[0] / 2) * CANVAS_WIDTH;
-    let y = (selectedModel.getCenter()[1] / 2) * CANVAS_HEIGHT;
-    document.getElementById("trans_x_val").value = x;
-    document.getElementById("trans_x_output").textContent = x;
-    document.getElementById("trans_y_val").value = y;
-    document.getElementById("trans_y_output").textContent = y;
-
-    // update rotation angle
-    document.getElementById("rotate_val").value = selectedModel.rotation;
-    document.getElementById("rotate_output").value = selectedModel.rotation;
   } else if (selectedModel instanceof Line) {
-    // Update option accessibility
-    document.getElementById("width_val").disabled = false;
+    // Update LINE accessibility
     document.getElementById("height_val").disabled = true;
-    document.getElementById("trans_x_val").disabled = false;
-    document.getElementById("trans_y_val").disabled = false;
-    document.getElementById("rotate_val").disabled = false;
-    document.getElementById("dilatation_val").disabled = false;
-    document.getElementById("edit_color_choice").disabled = false;
-
-    // update current size
     document.getElementById("width_val").value =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
       (selectedModel.getWidth() / 2) * CANVAS_WIDTH;
-    document.getElementById("height_val").value =
-      (selectedModel.getHeight() / 2) * CANVAS_HEIGHT;
-    document.getElementById("height_output").textContent =
-      (selectedModel.getHeight() / 2) * CANVAS_HEIGHT;
-
-    // update current position in canvas
-    let x = (selectedModel.getCenter()[0] / 2) * CANVAS_WIDTH;
-    let y = (selectedModel.getCenter()[1] / 2) * CANVAS_HEIGHT;
-    document.getElementById("trans_x_val").value = x;
-    document.getElementById("trans_x_output").textContent = x;
-    document.getElementById("trans_y_val").value = y;
-    document.getElementById("trans_y_output").textContent = y;
-    document.getElementById("rotate_val").value = selectedModel.rotation;
-    document.getElementById("rotate_output").value = selectedModel.rotation;
-
-    // update rotation angle
-    document.getElementById("rotate_val").value =
-      selectedModel.rotation
-    document.getElementById("rotate_output").value =
-      selectedModel.rotation
   } else if (selectedModel instanceof Polygon) {
     // TODO: implement polygon
   }
 });
 
-/* --------- Model Sizing Area ---------- */
+/*
+█▀ █ ▀█ █ █▄░█ █▀▀
+▄█ █ █▄ █ █░▀█ █▄█
+*/
 const widthSlider = document.getElementById("width_val");
 widthSlider.addEventListener("input", (e) => {
   document.getElementById("width_output").textContent = e.target.value;
@@ -337,9 +390,11 @@ heightSlider.addEventListener("input", (e) => {
   objects[existing_model.value].setHeight(height);
 });
 
-/* --------- Transformation Area --------- */
+/*
+▀█▀ █▀█ ▄▀█ █▄░█ █▀ █░░ ▄▀█ ▀█▀ █ █▀█ █▄░█
+░█░ █▀▄ █▀█ █░▀█ ▄█ █▄▄ █▀█ ░█░ █ █▄█ █░▀█
+*/
 
-// Translation
 const translateSliderX = document.getElementById("trans_x_val");
 translateSliderX.addEventListener("input", (e) => {
   document.getElementById("trans_x_output").textContent = e.target.value;
@@ -362,27 +417,39 @@ translateSliderY.addEventListener("input", (e) => {
   );
 });
 
-// rotation
+/*
+█▀█ █▀█ ▀█▀ ▄▀█ ▀█▀ █ █▀█ █▄░█
+█▀▄ █▄█ ░█░ █▀█ ░█░ █ █▄█ █░▀█ 
+*/
 const rotateSlider = document.getElementById("rotate_val");
 rotateSlider.addEventListener("input", (e) => {
   document.getElementById("rotate_output").textContent = e.target.value;
   objects[existing_model.value].rotate(e.target.value, -1);
 });
 
-// dilatation
+/*
+█▀▄ █ █░░ ▄▀█ ▀█▀ ▄▀█ ▀█▀ █ █▀█ █▄░█
+█▄▀ █ █▄▄ █▀█ ░█░ █▀█ ░█░ █ █▄█ █░▀█
+*/
 const dilatationSlider = document.getElementById("dilatation_val");
 dilatationSlider.addEventListener("input", (e) => {
   document.getElementById("dilatation_output").textContent = e.target.value;
   objects[existing_model.value].dilate(e.target.value);
 });
 
-/* --------- Color Editing Area --------- */
+/*
+█▀ █░█ ▄▀█ █▀█ █▀▀   █▀▀ █▀█ █░░ █▀█ █▀█
+▄█ █▀█ █▀█ █▀▀ ██▄   █▄▄ █▄█ █▄▄ █▄█ █▀▄
+*/
 const modelColor = document.getElementById("edit_color_choice");
 modelColor.addEventListener("change", (e) => {
   objects[existing_model.value].setColor(CMAP.get(e.target.value));
 });
 
-/* --------- Import & Export Section --------- */
+/*
+█ █▀▄▀█ █▀█ █▀█ █▀█ ▀█▀  &   █▀▀ ▀▄▀ █▀█ █▀█ █▀█ ▀█▀
+█ █░▀░█ █▀▀ █▄█ █▀▄ ░█░  &   ██▄ █░█ █▀▀ █▄█ █▀▄ ░█░ 
+*/
 const exportButton = document.getElementById("export_button");
 exportButton.addEventListener("click", (e) => {
   const exportFilename = document.getElementById("export_file").value;
@@ -436,3 +503,13 @@ const importFile = (file) => {
 
   reader.readAsText(file);
 };
+
+const render = () => {
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  for (let i = 0; i < objects.length; i++) {
+    objects[i].render(gl, program, vBuffer, cBuffer);
+  }
+  window.requestAnimFrame(render);
+};
+
+render();

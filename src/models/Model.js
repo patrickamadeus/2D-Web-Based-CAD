@@ -1,3 +1,4 @@
+import { CMAP } from "../helpers/const.js";
 import {
   flatten,
   dec_hex,
@@ -16,7 +17,7 @@ export class Model {
     this.rotation = 0;
     this.dilatation = 1;
     this.id = id;
-    this.shape = "none"
+    this.shape = "none";
   }
 
   copy(obj) {
@@ -131,20 +132,28 @@ export class Model {
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
     const vPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(vPosition,2,gl.FLOAT,false,0,0);
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
     const vColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vColor,4,gl.FLOAT,false,0,0);
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
     if (this.shape == "line") {
       gl.drawArrays(gl.LINES, 0, vertices.length);
     } else {
       gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
+    }
+
+    // this.renderPoints(gl, program, vBuffer, cBuffer);
+  };
+
+  renderPoints = (gl, program, vBuffer, cBuffer) => {
+    for (let j = 0; j < this.vertices.length; j++) {
+      this.vertices[j].render(gl, [1, 1, 1, 1], program, vBuffer, cBuffer);
     }
   };
 }
@@ -154,10 +163,36 @@ export class Point {
     this.id = id;
     this.name = `Point_${id}`;
     this.coordinate = coordinate;
-    this.color = color; 
+    this.color = color;
   }
 
   setColor = (color) => {
     this.color = color;
+  };
+
+  render = (gl, color, program, vBuffer, cBuffer) => {
+    const vertices = [
+      [this.coordinate[0] + 0.02, this.coordinate[1]],
+      [this.coordinate[0], this.coordinate[1] + 0.02],
+      [this.coordinate[0] - 0.02, this.coordinate[1]],
+      [this.coordinate[0], this.coordinate[1] - 0.02],
+    ];
+    const colors = [color, color, color, color];
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+
+    const vPosition = gl.getAttribLocation(program, "vPosition");
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+
+    const vColor = gl.getAttribLocation(program, "vColor");
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vColor);
+
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
   };
 }
