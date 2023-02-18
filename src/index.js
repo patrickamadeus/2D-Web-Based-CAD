@@ -19,6 +19,7 @@ import { euclideanDistance } from "./helpers/utility.js";
 
 // Global object array
 var objects = [];
+var initialVertex;
 var canvas = document.querySelector("#canvas");
 
 // Global event state
@@ -83,7 +84,7 @@ canvas.addEventListener("mousedown", (e) => {
           vertices[i].color.toString()
         );
 
-        if (selectedModel instanceof Polygon){
+        if (selectedModel instanceof Polygon) {
           document.getElementById("delete_vertex_button").disabled = false;
         }
 
@@ -101,7 +102,7 @@ canvas.addEventListener("mousedown", (e) => {
       }
     }
 
-    console.log("Vertex Choice: " + vertexChoice)
+    console.log("Vertex Choice: " + vertexChoice);
   }
 });
 
@@ -111,7 +112,11 @@ canvas.addEventListener("mousemove", (e) => {
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     let selectedModel = objects[document.getElementById("model_list").value];
-    if (selectedModel) {
+    console.log(selectedModel);
+    if (selectedModel instanceof Rectangle) {
+      selectedModel.moveVertex(vertexChoice, [x, y], initialVertex);
+      console.log(initialVertex);
+    } else {
       selectedModel.moveVertex(vertexChoice, [x, y]);
     }
   }
@@ -145,6 +150,8 @@ canvas.addEventListener("mousemove", function (e) {
       object.setVertexCoordinate(1, x, object.getVertexCoor(0)[1]);
       object.setVertexCoordinate(2, x, y);
       object.setVertexCoordinate(3, object.getVertexCoor(0)[0], y);
+
+      initialVertex = [x, y];
     } else if (modelChoice == "square") {
       object.moveVertex(2, [x, y]); // default kanan bawah
     } else if (modelChoice == "line") {
@@ -154,8 +161,6 @@ canvas.addEventListener("mousemove", function (e) {
     }
   }
 });
-
-
 
 /*
 █▀▄ █▄█ █▄░█ ▄▀█ █▀▄▀█ █ █▀▀   █░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀
@@ -196,27 +201,27 @@ canvas.addEventListener("mousemove", (e) => {
   if (object instanceof Rectangle) {
     // Update RECTANGLE accessibility
     document.getElementById("width_val").value =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("height_val").value =
-    (object.getHeight() / 2) * CANVAS_HEIGHT;
+      (object.getHeight() / 2) * CANVAS_HEIGHT;
     document.getElementById("height_output").textContent =
-    (object.getHeight() / 2) * CANVAS_HEIGHT;
+      (object.getHeight() / 2) * CANVAS_HEIGHT;
   } else if (object instanceof Square) {
     // Update SQUARE accessibility
     document.getElementById("height_val").disabled = true;
     document.getElementById("width_val").value =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
   } else if (object instanceof Line) {
     // Update LINE accessibility
     document.getElementById("height_val").disabled = true;
     document.getElementById("width_val").value =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
     document.getElementById("width_output").textContent =
-    (object.getWidth() / 2) * CANVAS_WIDTH;
+      (object.getWidth() / 2) * CANVAS_WIDTH;
   } else if (object instanceof Polygon) {
     // Do nothing
   }
@@ -226,20 +231,20 @@ canvas.addEventListener("mousedown", (e) => {
   if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
   colorChoice = document.querySelector("#color_choice").value;
-  
+
   let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-  
+
   if (modelChoice == "none" || colorChoice == "none") {
     alert("Please choose model and color");
     return;
   }
-  
+
   if (!isDrawingModel && objects.length == 5) {
     alert("You can only draw 5 objects!");
     return;
   }
-  
+
   document.getElementById("width_val").disabled = true;
   document.getElementById("height_val").disabled = true;
   document.getElementById("trans_x_val").disabled = true;
@@ -248,11 +253,11 @@ canvas.addEventListener("mousedown", (e) => {
   document.getElementById("dilatation_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
-  
+
   if (modelChoice == "rectangle") {
     if (!isDrawingModel) {
       let rectangle = new Rectangle(rectangleID++);
-      
+
       rectangle.vertices[0].coordinate = [x, y];
       rectangle.setColor(CMAP.get(colorChoice));
       objects.push(rectangle);
@@ -265,7 +270,7 @@ canvas.addEventListener("mousedown", (e) => {
   } else if (modelChoice == "square") {
     if (!isDrawingModel) {
       let square = new Square(squareID++);
-      
+
       square.vertices[0].coordinate = [x, y];
       square.center.coordinate = [x, y];
       square.setColor(CMAP.get(colorChoice));
@@ -290,19 +295,18 @@ canvas.addEventListener("mousedown", (e) => {
       updateModelList();
     }
   } else if (modelChoice == "polygon") {
-    if(!isDrawingModel){
+    if (!isDrawingModel) {
       let polygon = new Polygon(polygonID++);
       polygon.addVertex(x, y, CMAP.get(colorChoice));
       polygon.addVertex(x, y, CMAP.get(colorChoice));
       objects.push(polygon);
       isDrawingModel = true;
-    } else{
+    } else {
       let polygon = objects[objects.length - 1];
       polygon.addVertex(x, y, CMAP.get(colorChoice));
     }
   }
 });
-
 
 // POLYGON STOPPER
 canvas.addEventListener("contextmenu", (e) => {
@@ -319,10 +323,12 @@ canvas.addEventListener("contextmenu", (e) => {
 });
 
 // POLYGON VERTEX DELETION
-document.getElementById("delete_vertex_button").addEventListener("click", (e) => {
+document
+  .getElementById("delete_vertex_button")
+  .addEventListener("click", (e) => {
     let object = objects[document.getElementById("model_list").value];
     let oldVertices = object.vertices;
-    let newVertices = []
+    let newVertices = [];
 
     for (let i = 0; i < oldVertices.length; i++) {
       if (i != vertexChoice) {
@@ -332,30 +338,29 @@ document.getElementById("delete_vertex_button").addEventListener("click", (e) =>
 
     object.vertices = newVertices;
     object.computeCenter();
-});
+  });
 
 // POLYGON VERTEX ADDITION
-let addVertexButton = document.getElementById("add_vertex_button")
+let addVertexButton = document.getElementById("add_vertex_button");
 addVertexButton.addEventListener("click", (e) => {
-  if(isAddingVertex){
+  if (isAddingVertex) {
     isAddingVertex = false;
-    addVertexButton.textContent = 'Add Vertex';
-  }else{
+    addVertexButton.textContent = "Add Vertex";
+  } else {
     isAddingVertex = true;
-    addVertexButton.textContent = 'Cancel Add Vertex';
+    addVertexButton.textContent = "Cancel Add Vertex";
   }
 });
 
 canvas.addEventListener("mousedown", (e) => {
-  if(isAddingVertex){
+  if (isAddingVertex) {
     let object = objects[document.getElementById("model_list").value];
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    object.newVertex([x,y], CMAP.get(colorChoice));
+    object.newVertex([x, y], CMAP.get(colorChoice));
     object.computeCenter();
   }
-})
-
+});
 
 var modelList = document.getElementById("model_list");
 const updateModelList = () => {
