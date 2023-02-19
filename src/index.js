@@ -111,10 +111,8 @@ canvas.addEventListener("mousemove", (e) => {
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     let selectedModel = objects[document.getElementById("model_list").value];
-    console.log(selectedModel);
     if (selectedModel instanceof Rectangle) {
-      selectedModel.moveVertex(vertexChoice, [x, y], initialVertex);
-      console.log(initialVertex);
+      selectedModel.moveVertex(vertexChoice, [x, y]);
     } else {
       selectedModel.moveVertex(vertexChoice, [x, y]);
     }
