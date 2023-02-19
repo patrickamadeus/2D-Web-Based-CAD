@@ -24,6 +24,20 @@ export class Polygon extends Model {
         this.vertices[id].coordinate = coordinate;
     }
 
+    deleteVertex = (id) => {
+        let oldVertices = this.vertices;
+        let newVertices = []
+    
+        for (let i = 0; i < oldVertices.length; i++) {
+          if (i != id) {
+            newVertices.push(oldVertices[i]);
+          }
+        }
+    
+        this.vertices = newVertices;
+        this.computeCenter();
+    }
+
     newVertex = (coordinate) => {
         // get vertices with smallest distance to coordinate
         let minDistance = 10000;
@@ -52,5 +66,7 @@ export class Polygon extends Model {
         } else {
             this.vertices.splice(rightId, 0, new Point(coordinate, this.vertices[minDistanceId].color, this.vertices.length));
         }
+
+        this.computeCenter();
     }
 }

@@ -102,7 +102,6 @@ canvas.addEventListener("mousedown", (e) => {
       }
     }
 
-    console.log("Vertex Choice: " + vertexChoice);
   }
 });
 
@@ -327,18 +326,8 @@ document
   .getElementById("delete_vertex_button")
   .addEventListener("click", (e) => {
     let object = objects[document.getElementById("model_list").value];
-    let oldVertices = object.vertices;
-    let newVertices = [];
-
-    for (let i = 0; i < oldVertices.length; i++) {
-      if (i != vertexChoice) {
-        newVertices.push(oldVertices[i]);
-      }
-    }
-
-    object.vertices = newVertices;
-    object.computeCenter();
-  });
+    object.deleteVertex(vertexChoice);
+});
 
 // POLYGON VERTEX ADDITION
 let addVertexButton = document.getElementById("add_vertex_button");
