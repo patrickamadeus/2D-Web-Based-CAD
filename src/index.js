@@ -15,7 +15,13 @@ import { Line } from "./models/line.js";
 import { Square } from "./models/square.js";
 import { Rectangle } from "./models/rectangle.js";
 import { Polygon } from "./models/polygon.js";
-import { euclideanDistance } from "./helpers/utility.js";
+import { Point } from "./models/Model.js";
+import {
+  euclideanDistance,
+  myConvexHull,
+  quickSort,
+  sortClockwise,
+} from "./helpers/utility.js";
 
 // Global object array
 var objects = [];
@@ -99,9 +105,9 @@ canvas.addEventListener("mousedown", (e) => {
         isSelectingVertex = false;
         document.getElementById("vertex_color_choice").disabled = true;
         document.getElementById("vertex_color_choice").value = "none";
+        document.getElementById("delete_vertex_button").disabled = true;
       }
     }
-
   }
 });
 
@@ -325,7 +331,7 @@ document
   .addEventListener("click", (e) => {
     let object = objects[document.getElementById("model_list").value];
     object.deleteVertex(vertexChoice);
-});
+  });
 
 // POLYGON VERTEX ADDITION
 let addVertexButton = document.getElementById("add_vertex_button");
@@ -333,9 +339,44 @@ addVertexButton.addEventListener("click", (e) => {
   if (isAddingVertex) {
     isAddingVertex = false;
     addVertexButton.textContent = "Add Vertex";
+
+    // UNBLOCK ALL OTHER BUTTON
+    document.getElementById("delete_vertex_button").disabled = false;
+    document.getElementById("convex_hull_button").disabled = false;
   } else {
     isAddingVertex = true;
     addVertexButton.textContent = "Cancel Add Vertex";
+
+    // BLOCK ALL OTHER BUTTON
+    document.getElementById("delete_vertex_button").disabled = true;
+    document.getElementById("convex_hull_button").disabled = true;
+  }
+});
+
+// POLYGON CONVEX HULL
+let convexHullButton = document.getElementById("convex_hull_button");
+convexHullButton.addEventListener("click", (e) => {
+  console.log("hi");
+  let object = objects[document.getElementById("model_list").value];
+  if (object instanceof Polygon) {
+    let coordinates = quickSort(
+      object.vertices.map((vertex) => vertex.coordinate)
+    );
+    let convex_coordinates = myConvexHull(coordinates);
+
+    let newVertices = [];
+    let id = 0;
+    for (let i = 0; i < convex_coordinates.length; i++) {
+      newVertices.push(
+        new Point(
+          [convex_coordinates[i][0], convex_coordinates[i][1]],
+          object.vertices[0].color,
+          id++
+        )
+      );
+    }
+
+    object.vertices = sortClockwise(newVertices, object.center);
   }
 });
 
@@ -415,6 +456,11 @@ existing_model.addEventListener("change", (e) => {
   document.getElementById("rotate_val").value = selectedModel.rotation;
   document.getElementById("rotate_output").value = selectedModel.rotation;
 
+  // Polygon vertex
+  document.getElementById("add_vertex_button").disabled = true;
+  document.getElementById("delete_vertex_button").disabled = true;
+  document.getElementById("convex_hull_button").disabled = true;
+
   // Special case for each shape
   if (selectedModel instanceof Rectangle) {
     // Update RECTANGLE accessibility
@@ -444,6 +490,7 @@ existing_model.addEventListener("change", (e) => {
     document.getElementById("width_val").disabled = true;
     document.getElementById("height_val").disabled = true;
     document.getElementById("add_vertex_button").disabled = false;
+    document.getElementById("convex_hull_button").disabled = false;
   }
 });
 
