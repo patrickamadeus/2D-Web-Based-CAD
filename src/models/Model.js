@@ -16,6 +16,7 @@ export class Model {
     this.center = new Point([0, 0], [0, 0, 0, 1], 0);
     this.rotation = 0;
     this.dilatation = 1;
+    this.shear = 0;
     this.id = id;
     this.shape = "none";
   }
@@ -116,6 +117,26 @@ export class Model {
       this.vertices[i].coordinate[1] =
         nMul * (this.vertices[i].coordinate[1] - this.center.coordinate[1]) +
         this.center.coordinate[1];
+    }
+  };
+
+  shearing = (angle, strength) => {
+    const sstrength = this.shear;   
+    this.shear = strength;
+    const diffAngle = ((angle - this.rotation) * Math.PI) / 180;
+    
+
+    for (let i = 0; i < this.vertices.length; i++) {
+      console.log("X : ");
+      console.log(this.vertices[i].coordinate[0]);
+      console.log("Y : ");
+      console.log(this.vertices[i].coordinate[1]);
+      console.log("Shear Power : ");
+      console.log(this.vertices[i].coordinate[1] - this.center.coordinate[1]);
+      this.vertices[i].coordinate[0] = (sstrength / this.shear * (this.vertices[i].coordinate[1] - this.center.coordinate[1])) + this.vertices[i].coordinate[0];
+      console.log(this.vertices[i].coordinate[0]);
+      console.log("NEXT");
+      //this.vertices[i].coordinate[1] = this.center.coordinate[1] + (this.vertices[i].coordinate[1] / 2);
     }
   };
 
