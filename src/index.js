@@ -144,6 +144,8 @@ vertexColorChoice.addEventListener("change", (e) => {
   }
 });
 
+let x0_rect = 0;
+let y0_rect = 0;
 // mouse move untuk creating object
 canvas.addEventListener("mousemove", function (e) {
   if (isDrawingModel) {
@@ -152,9 +154,21 @@ canvas.addEventListener("mousemove", function (e) {
     let object = objects[objects.length - 1];
 
     if (modelChoice == "rectangle") {
-      object.setVertexCoordinate(1, x, object.getVertexCoor(0)[1]);
-      object.setVertexCoordinate(2, x, y);
-      object.setVertexCoordinate(3, object.getVertexCoor(0)[0], y);
+      // get vertices 0 coordinate
+      let assignCord = []
+
+      if (x < x0_rect && y < y0_rect) { assignCord = [1, 0, 3, 2]}
+      else if (x < x0_rect && y > y0_rect) { assignCord = [2, 3, 0 ,1]}
+      else if (x > x0_rect && y < y0_rect) { assignCord = [0, 1, 2, 3]}
+      else if (x > x0_rect && y > y0_rect) { assignCord = [3, 2, 1, 0]}
+
+      console.log(assignCord)
+      console.log(x0_rect, y0_rect)
+
+      object.setVertexCoordinate(assignCord[0], x0_rect, y0_rect);
+      object.setVertexCoordinate(assignCord[1], x, y0_rect);
+      object.setVertexCoordinate(assignCord[2], x, y);
+      object.setVertexCoordinate(assignCord[3], x0_rect, y);
 
       initialVertex = [x, y];
     } else if (modelChoice == "square") {
@@ -273,6 +287,8 @@ canvas.addEventListener("mousedown", (e) => {
       let rectangle = new Rectangle(rectangleID++);
 
       rectangle.vertices[0].coordinate = [x, y];
+      x0_rect = x;
+      y0_rect = y;
       rectangle.setColor(hex_2_dec(colorChoice));
       objects.push(rectangle);
       isDrawingModel = true;

@@ -4,13 +4,13 @@ import { Model, Point } from "./Model.js";
 export class Polygon extends Model {
     constructor(id) {
         super(id);
-        this.shape = 'Polygon';
+        this.shape = 'polygon';
         this.name = `Polygon_${id}`;
     }
 
     copy(obj) {
         super.copy(obj);
-        this.shape = 'Polygon';
+        this.shape = 'polygon';
         this.name = obj.name;
     }
 
