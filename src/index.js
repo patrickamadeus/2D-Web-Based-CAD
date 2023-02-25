@@ -188,7 +188,10 @@ canvas.addEventListener("mousemove", (e) => {
   document.getElementById("trans_y_val").disabled = false;
   document.getElementById("rotate_val").disabled = false;
   document.getElementById("dilatation_val").disabled = false;
-  document.getElementById("shear_val").disabled = false;
+  document.getElementById("shearGX_val").disabled = false;
+  document.getElementById("shearGY_val").disabled = false;
+  document.getElementById("shearLX_val").disabled = false;
+  document.getElementById("shearLY_val").disabled = false;
   document.getElementById("edit_color_choice").disabled = false;
 
   // Update position
@@ -255,7 +258,10 @@ canvas.addEventListener("mousedown", (e) => {
   document.getElementById("trans_y_val").disabled = true;
   document.getElementById("rotate_val").disabled = true;
   document.getElementById("dilatation_val").disabled = true;
-  document.getElementById("shear_val").disabled = true;
+  document.getElementById("shearGX_val").disabled = true;
+  document.getElementById("shearGY_val").disabled = true;
+  document.getElementById("shearLX_val").disabled = true;
+  document.getElementById("shearLY_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
 
@@ -426,7 +432,10 @@ if (existing_model.value == "none") {
   document.getElementById("trans_y_val").disabled = true;
   document.getElementById("rotate_val").disabled = true;
   document.getElementById("dilatation_val").disabled = true;
-  document.getElementById("shear_val").disabled = true;
+  document.getElementById("shearGX_val").disabled = true;
+  document.getElementById("shearGY_val").disabled = true;
+  document.getElementById("shearLX_val").disabled = true;
+  document.getElementById("shearLY_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
 }
@@ -447,7 +456,10 @@ existing_model.addEventListener("change", (e) => {
   document.getElementById("trans_y_val").disabled = false;
   document.getElementById("rotate_val").disabled = false;
   document.getElementById("dilatation_val").disabled = false;
-  document.getElementById("shear_val").disabled = false;
+  document.getElementById("shearGX_val").disabled = false;
+  document.getElementById("shearGY_val").disabled = false;
+  document.getElementById("shearLX_val").disabled = false;
+  document.getElementById("shearLY_val").disabled = false;
   document.getElementById("edit_color_choice").disabled = false;
 
   // Update position
@@ -569,10 +581,16 @@ dilatationSlider.addEventListener("input", (e) => {
 █▀ █░█ █▀▀ ▄▀█ █▀█
 ▄█ █▀█ ██▄ █▀█ █▀▄
 */
-const shearSlider = document.getElementById("shear_val");
-shearSlider.addEventListener("input", (e) => {
-  document.getElementById("shear_output").textContent = e.target.value;
-  objects[existing_model.value].shearing(e.target.value, e.target.value);
+const shearSliderGX = document.getElementById("shearGX_val");
+shearSliderGX.addEventListener("input", (e) => {
+  document.getElementById("shearGX_output").textContent = e.target.value;
+  objects[existing_model.value].GlobalShearingX(e.target.value);
+});
+
+const shearSliderGY = document.getElementById("shearGY_val");
+shearSliderGY.addEventListener("input", (e) => {
+  document.getElementById("shearGY_output").textContent = e.target.value;
+  objects[existing_model.value].GlobalShearingY(e.target.value);
 });
 
 /*

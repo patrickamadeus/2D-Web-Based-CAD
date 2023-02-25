@@ -16,7 +16,10 @@ export class Model {
     this.center = new Point([0, 0], [0, 0, 0, 1], 0);
     this.rotation = 0;
     this.dilatation = 1;
-    this.shear = 0;
+    this.localXShear = 0;
+    this.localYShear = 0;
+    this.globalXShear = 0;
+    this.globalYShear = 0;
     this.id = id;
     this.shape = "none";
   }
@@ -120,12 +123,29 @@ export class Model {
     }
   };
 
-  shearing = (angle, strength) => {
-    const sstrength = this.shear;   
-    this.shear = strength;
+  GlobalShearingX = (strength) => {
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.vertices[i].coordinate[0] = this.vertices[i].coordinate[0] - (this.localXShear * (this.vertices[i].coordinate[1] - this.center.coordinate[1]));
+      this.vertices[i].coordinate[0] = this.vertices[i].coordinate[0] + (strength * (this.vertices[i].coordinate[1] - this.center.coordinate[1]));
+      console.log(this.vertices[i].coordinate[0]);
+    }
+    this.localXShear = strength;
+  };
+
+  GlobalShearingY = (strength) => {
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.vertices[i].coordinate[1] = this.vertices[i].coordinate[1] - (this.localYShear * (this.vertices[i].coordinate[0] - this.center.coordinate[0]));
+      this.vertices[i].coordinate[1] = this.vertices[i].coordinate[1] + (strength * (this.vertices[i].coordinate[0] - this.center.coordinate[0]));
+      console.log(this.vertices[i].coordinate[0]);
+    }
+    this.localYShear = strength;
+  };
+
+  LocalShearingX = (angle, strength) => {
+    const sstrength = strength;   
     const diffAngle = ((angle - this.rotation) * Math.PI) / 180;
     
-
+    console.log(sstrength, this.shear);
     for (let i = 0; i < this.vertices.length; i++) {
       console.log("X : ");
       console.log(this.vertices[i].coordinate[0]);
@@ -133,11 +153,15 @@ export class Model {
       console.log(this.vertices[i].coordinate[1]);
       console.log("Shear Power : ");
       console.log(this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      this.vertices[i].coordinate[0] = (sstrength / this.shear * (this.vertices[i].coordinate[1] - this.center.coordinate[1])) + this.vertices[i].coordinate[0];
+      this.vertices[i].coordinate[0] = this.vertices[i].coordinate[0] - (this.shear * (this.vertices[i].coordinate[1] - this.center.coordinate[1]));
+      this.vertices[i].coordinate[0] = this.vertices[i].coordinate[0] + (sstrength * (this.vertices[i].coordinate[1] - this.center.coordinate[1]));
       console.log(this.vertices[i].coordinate[0]);
+
+      
       console.log("NEXT");
       //this.vertices[i].coordinate[1] = this.center.coordinate[1] + (this.vertices[i].coordinate[1] / 2);
     }
+    this.shear = strength;
   };
 
   render = (gl, program, vBuffer, cBuffer) => {
