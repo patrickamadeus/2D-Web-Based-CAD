@@ -8,6 +8,12 @@ export class Polygon extends Model {
         this.name = `Polygon_${id}`;
     }
 
+    copy(obj) {
+        super.copy(obj);
+        this.shape = 'Polygon';
+        this.name = obj.name;
+    }
+
     addVertex = (x, y, rgba) => {
         this.vertices.push(new Point([x, y], rgba, this.vertices.length));
     }

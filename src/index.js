@@ -250,10 +250,10 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (!isDrawingModel && objects.length == 5) {
-    alert("You can only draw 5 objects!");
-    return;
-  }
+  // if (!isDrawingModel && objects.length == 5) {
+  //   alert("You can only draw 5 objects!");
+  //   return;
+  // }
 
   document.getElementById("width_val").disabled = true;
   document.getElementById("height_val").disabled = true;
@@ -438,9 +438,14 @@ if (existing_model.value == "none") {
   document.getElementById("shearLY_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
+  document.getElementById("export_model_button").disabled = true;
 }
 
 existing_model.addEventListener("change", (e) => {
+
+  // enable export modelbutton
+  document.getElementById("export_model_button").disabled = false;
+
   // Disable create new model access
   document.getElementById("model_choice").value = "none";
   document.getElementById("color_choice").value = "none";
@@ -612,6 +617,12 @@ exportButton.addEventListener("click", (e) => {
   exportFile(exportFilename, objects);
 });
 
+const exportModelButton = document.getElementById("export_model_button")
+exportModelButton.addEventListener("click", (e) => {
+  const exportFilename = document.getElementById("export_file").value;
+  exportFile(exportFilename, [objects[existing_model.value]]);
+});
+
 const importFileContainer = document.getElementById("import_file");
 const importButton = document.getElementById("import_button");
 
@@ -640,6 +651,9 @@ importButton.addEventListener("click", (e) => {
 const importFile = (file) => {
   const reader = new FileReader();
   reader.onload = function (e) {
+    // clear objects
+    objects = [];
+
     const toAppend = JSON.parse(e.target.result);
 
     for (let i = 0; i < toAppend.length; i++) {
