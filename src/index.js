@@ -450,6 +450,7 @@ const updateModelList = () => {
 /* New Model Create Selection Section */
 const new_model = document.getElementById("model_choice");
 new_model.addEventListener("change", (e) => {
+  vertexChoice = -1;
   document.getElementById("model_list").value = "none";
   document.getElementById("model_list").text = " -- select a model -- ";
   document.getElementById("edit_color_choice").disabled = true;
@@ -714,6 +715,8 @@ const render = () => {
     objects[i].render(gl, program, vBuffer, cBuffer);
   }
 
+  console.log(existing_model.value);
+  console.log(vertexChoice);
   // to determine which active models
   if (existing_model.value >= 0) {
     for (let i = 0; i < objects[existing_model.value].vertices.length; i++) {
@@ -728,7 +731,11 @@ const render = () => {
   }
 
   // to render active vertex
-  if (existing_model.value >= 0 && vertexChoice >= 0) {
+  if (
+    existing_model.value >= 0 &&
+    vertexChoice >= 0 &&
+    vertexChoice <= objects[existing_model.value].vertices.length - 1
+  ) {
     objects[existing_model.value].vertices[vertexChoice].render(
       gl,
       [0, 0, 0, 1],
