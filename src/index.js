@@ -184,17 +184,17 @@ canvas.addEventListener("mousemove", (e) => {
   let y = (object.getCenter()[1] / 2) * CANVAS_HEIGHT;
 
   // Update base selection access
-  document.getElementById("width_val").disabled = false;
-  document.getElementById("height_val").disabled = false;
-  document.getElementById("trans_x_val").disabled = false;
-  document.getElementById("trans_y_val").disabled = false;
-  document.getElementById("rotate_val").disabled = false;
-  document.getElementById("dilatation_val").disabled = false;
-  document.getElementById("shearGX_val").disabled = false;
-  document.getElementById("shearGY_val").disabled = false;
-  document.getElementById("shearLX_val").disabled = false;
-  document.getElementById("shearLY_val").disabled = false;
-  document.getElementById("edit_color_choice").disabled = false;
+  document.getElementById("width_val").disabled = true;
+  document.getElementById("height_val").disabled = true;
+  document.getElementById("trans_x_val").disabled = true;
+  document.getElementById("trans_y_val").disabled = true;
+  document.getElementById("rotate_val").disabled = true;
+  document.getElementById("dilatation_val").disabled = true;
+  document.getElementById("shearGX_val").disabled = true;
+  document.getElementById("shearGY_val").disabled = true;
+  document.getElementById("shearLX_val").disabled = true;
+  document.getElementById("shearLY_val").disabled = true;
+  document.getElementById("edit_color_choice").disabled = true;
 
   // Update position
   document.getElementById("trans_x_val").value = x;
@@ -352,7 +352,7 @@ addVertexButton.addEventListener("click", (e) => {
     addVertexButton.textContent = "Add Vertex";
 
     // UNBLOCK ALL OTHER BUTTON
-    document.getElementById("delete_vertex_button").disabled = false;
+    document.getElementById("delete_vertex_button").disabled = true;
     document.getElementById("convex_hull_button").disabled = false;
   } else {
     isAddingVertex = true;
