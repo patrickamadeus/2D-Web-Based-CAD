@@ -92,6 +92,8 @@ canvas.addEventListener("mousedown", (e) => {
           vertices[i].color
         );
 
+        document.getElementById("edit_color_choice").disabled = false;
+
         if (selectedModel instanceof Polygon) {
           document.getElementById("delete_vertex_button").disabled = false;
         }
@@ -106,7 +108,7 @@ canvas.addEventListener("mousedown", (e) => {
         vertexChoice = -1;
         isSelectingVertex = false;
         document.getElementById("vertex_color_choice").disabled = true;
-        document.getElementById("vertex_color_choice").value = "";
+        document.getElementById("vertex_color_choice").value = "#000000";
         document.getElementById("delete_vertex_button").disabled = true;
       }
     }
@@ -123,6 +125,20 @@ canvas.addEventListener("mousemove", (e) => {
       selectedModel.moveVertex(vertexChoice, [x, y]);
     } else {
       selectedModel.moveVertex(vertexChoice, [x, y]);
+    }
+  } else {
+    if (document.getElementById("model_list").value != "none") {
+      document.getElementById("width_val").disabled = false;
+      document.getElementById("height_val").disabled = false;
+      document.getElementById("trans_x_val").disabled = false;
+      document.getElementById("trans_y_val").disabled = false;
+      document.getElementById("rotate_val").disabled = false;
+      document.getElementById("dilatation_val").disabled = false;
+      document.getElementById("shearGX_val").disabled = false;
+      document.getElementById("shearGY_val").disabled = false;
+      document.getElementById("shearLX_val").disabled = false;
+      document.getElementById("shearLY_val").disabled = false;
+      document.getElementById("edit_color_choice").disabled = false;
     }
   }
 });
@@ -155,15 +171,20 @@ canvas.addEventListener("mousemove", function (e) {
 
     if (modelChoice == "rectangle") {
       // get vertices 0 coordinate
-      let assignCord = []
+      let assignCord = [];
 
-      if (x < x0_rect && y < y0_rect) { assignCord = [1, 0, 3, 2]}
-      else if (x < x0_rect && y > y0_rect) { assignCord = [2, 3, 0 ,1]}
-      else if (x > x0_rect && y < y0_rect) { assignCord = [0, 1, 2, 3]}
-      else if (x > x0_rect && y > y0_rect) { assignCord = [3, 2, 1, 0]}
+      if (x < x0_rect && y < y0_rect) {
+        assignCord = [1, 0, 3, 2];
+      } else if (x < x0_rect && y > y0_rect) {
+        assignCord = [2, 3, 0, 1];
+      } else if (x > x0_rect && y < y0_rect) {
+        assignCord = [0, 1, 2, 3];
+      } else if (x > x0_rect && y > y0_rect) {
+        assignCord = [3, 2, 1, 0];
+      }
 
-      console.log(assignCord)
-      console.log(x0_rect, y0_rect)
+      console.log(assignCord);
+      console.log(x0_rect, y0_rect);
 
       object.setVertexCoordinate(assignCord[0], x0_rect, y0_rect);
       object.setVertexCoordinate(assignCord[1], x, y0_rect);
@@ -208,6 +229,7 @@ canvas.addEventListener("mousemove", (e) => {
   document.getElementById("shearGY_val").disabled = true;
   document.getElementById("shearLX_val").disabled = true;
   document.getElementById("shearLY_val").disabled = true;
+  document.getElementById("vertex_color_choice").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
 
   // Update position
@@ -254,7 +276,6 @@ canvas.addEventListener("mousedown", (e) => {
   if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
   colorChoice = document.querySelector("#color_choice").value;
-  console.log(colorChoice);
 
   let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
@@ -458,13 +479,12 @@ if (existing_model.value == "none") {
 }
 
 existing_model.addEventListener("change", (e) => {
-
   // enable export modelbutton
   document.getElementById("export_model_button").disabled = false;
 
   // Disable create new model access
-  document.getElementById("model_choice").value = "none";
-  document.getElementById("color_choice").value = "none";
+  document.getElementById("model_choice").value = "#000000";
+  document.getElementById("color_choice").value = "#000000";
 
   let selectedModel = objects[e.target.value];
   let x = (selectedModel.getCenter()[0] / 2) * CANVAS_WIDTH;
@@ -633,7 +653,7 @@ exportButton.addEventListener("click", (e) => {
   exportFile(exportFilename, objects);
 });
 
-const exportModelButton = document.getElementById("export_model_button")
+const exportModelButton = document.getElementById("export_model_button");
 exportModelButton.addEventListener("click", (e) => {
   const exportFilename = document.getElementById("export_file").value;
   exportFile(exportFilename, [objects[existing_model.value]]);
