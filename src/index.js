@@ -27,7 +27,6 @@ import {
 
 // Global object array
 var objects = [];
-var initialVertex;
 var canvas = document.querySelector("#canvas");
 
 // Global event state
@@ -73,7 +72,7 @@ const cBuffer = gl.createBuffer();
 
 var modelChoice;
 var colorChoice;
-var vertexChoice;
+var vertexChoice = -1;
 
 //* ------------------- Change Vertex Properties Segment -------------------------------*/
 canvas.addEventListener("mousedown", (e) => {
@@ -139,6 +138,7 @@ canvas.addEventListener("mousemove", (e) => {
       document.getElementById("shearLX_val").disabled = false;
       document.getElementById("shearLY_val").disabled = false;
       document.getElementById("edit_color_choice").disabled = false;
+      document.getElementById("vertex_color_choice").disabled = false;
     }
   }
 });
@@ -190,8 +190,6 @@ canvas.addEventListener("mousemove", function (e) {
       object.setVertexCoordinate(assignCord[1], x, y0_rect);
       object.setVertexCoordinate(assignCord[2], x, y);
       object.setVertexCoordinate(assignCord[3], x0_rect, y);
-
-      initialVertex = [x, y];
     } else if (modelChoice == "square") {
       object.moveVertex(2, [x, y]); // default kanan bawah
     } else if (modelChoice == "line") {
@@ -715,6 +713,31 @@ const render = () => {
   for (let i = 0; i < objects.length; i++) {
     objects[i].render(gl, program, vBuffer, cBuffer);
   }
+
+  // to determine which active models
+  if (existing_model.value >= 0) {
+    for (let i = 0; i < objects[existing_model.value].vertices.length; i++) {
+      objects[existing_model.value].vertices[i].render(
+        gl,
+        [1, 1, 1, 1],
+        program,
+        vBuffer,
+        cBuffer
+      );
+    }
+  }
+
+  // to render active vertex
+  if (existing_model.value >= 0 && vertexChoice >= 0) {
+    objects[existing_model.value].vertices[vertexChoice].render(
+      gl,
+      [0, 0, 0, 1],
+      program,
+      vBuffer,
+      cBuffer
+    );
+  }
+
   window.requestAnimFrame(render);
 };
 
