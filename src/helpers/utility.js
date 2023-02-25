@@ -187,6 +187,29 @@ const sortClockwise = (pArr, c) => {
   return n_pArr;
 };
 
+const dec_2_hex = (rgb) => {
+  var hex =
+    Number(rgb[0] * 255)
+      .toString(16)
+      .padStart(2, "0") +
+    Number(rgb[1] * 255)
+      .toString(16)
+      .padStart(2, "0") +
+    Number(rgb[2] * 255)
+      .toString(16)
+      .padStart(2, "0");
+  // Return the hex code
+  return "#" + hex;
+};
+
+const hex_2_dec = (hex) => {
+  const r = parseInt(hex.substr(1, 2), 16);
+  const g = parseInt(hex.substr(3, 2), 16);
+  const b = parseInt(hex.substr(5, 2), 16);
+
+  return [r / 255, g / 255, b / 255, 1];
+};
+
 window.requestAnimFrame = (function () {
   return (
     window.requestAnimationFrame ||
@@ -211,4 +234,6 @@ export {
   myConvexHull,
   sortClockwise,
   quickSort,
+  dec_2_hex,
+  hex_2_dec,
 };

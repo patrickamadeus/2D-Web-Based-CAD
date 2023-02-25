@@ -17,7 +17,9 @@ import { Rectangle } from "./models/rectangle.js";
 import { Polygon } from "./models/polygon.js";
 import { Point } from "./models/Model.js";
 import {
+  dec_2_hex,
   euclideanDistance,
+  hex_2_dec,
   myConvexHull,
   quickSort,
   sortClockwise,
@@ -86,8 +88,8 @@ canvas.addEventListener("mousedown", (e) => {
       if (euclideanDistance([x, y], vertices[i].coordinate) < 0.05) {
         vertexChoice = i;
         document.getElementById("vertex_color_choice").disabled = false;
-        document.getElementById("vertex_color_choice").value = RCMAP.get(
-          vertices[i].color.toString()
+        document.getElementById("vertex_color_choice").value = dec_2_hex(
+          vertices[i].color
         );
 
         if (selectedModel instanceof Polygon) {
@@ -104,7 +106,7 @@ canvas.addEventListener("mousedown", (e) => {
         vertexChoice = -1;
         isSelectingVertex = false;
         document.getElementById("vertex_color_choice").disabled = true;
-        document.getElementById("vertex_color_choice").value = "none";
+        document.getElementById("vertex_color_choice").value = "";
         document.getElementById("delete_vertex_button").disabled = true;
       }
     }
@@ -138,7 +140,7 @@ vertexColorChoice.addEventListener("change", (e) => {
   if (selectedModel) {
     objects[document.getElementById("model_list").value].vertices[
       vertexChoice
-    ].color = CMAP.get(vertexColorChoice.value);
+    ].color = hex_2_dec(vertexColorChoice.value);
   }
 });
 
@@ -238,11 +240,12 @@ canvas.addEventListener("mousedown", (e) => {
   if (document.getElementById("model_list").value != "none") return;
   modelChoice = document.querySelector("#model_choice").value;
   colorChoice = document.querySelector("#color_choice").value;
+  console.log(colorChoice);
 
   let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
-  if (modelChoice == "none" || colorChoice == "none") {
+  if (modelChoice == "none" || colorChoice == "#000000") {
     alert("Please choose model and color");
     return;
   }
@@ -270,7 +273,7 @@ canvas.addEventListener("mousedown", (e) => {
       let rectangle = new Rectangle(rectangleID++);
 
       rectangle.vertices[0].coordinate = [x, y];
-      rectangle.setColor(CMAP.get(colorChoice));
+      rectangle.setColor(hex_2_dec(colorChoice));
       objects.push(rectangle);
       isDrawingModel = true;
     } else {
@@ -284,7 +287,7 @@ canvas.addEventListener("mousedown", (e) => {
 
       square.vertices[0].coordinate = [x, y];
       square.center.coordinate = [x, y];
-      square.setColor(CMAP.get(colorChoice));
+      square.setColor(hex_2_dec(colorChoice));
       objects.push(square);
       isDrawingModel = true;
     } else {
@@ -297,7 +300,7 @@ canvas.addEventListener("mousedown", (e) => {
       let line = new Line(lineID++);
       line.vertices[0].coordinate = [x, y];
       line.vertices[1].coordinate = [x, y];
-      line.setColor(CMAP.get(colorChoice));
+      line.setColor(hex_2_dec(colorChoice));
       objects.push(line);
       isDrawingModel = true;
     } else {
@@ -308,13 +311,13 @@ canvas.addEventListener("mousedown", (e) => {
   } else if (modelChoice == "polygon") {
     if (!isDrawingModel) {
       let polygon = new Polygon(polygonID++);
-      polygon.addVertex(x, y, CMAP.get(colorChoice));
-      polygon.addVertex(x, y, CMAP.get(colorChoice));
+      polygon.addVertex(x, y, hex_2_dec(colorChoice));
+      polygon.addVertex(x, y, hex_2_dec(colorChoice));
       objects.push(polygon);
       isDrawingModel = true;
     } else {
       let polygon = objects[objects.length - 1];
-      polygon.addVertex(x, y, CMAP.get(colorChoice));
+      polygon.addVertex(x, y, hex_2_dec(colorChoice));
     }
   }
 });
@@ -393,7 +396,7 @@ canvas.addEventListener("mousedown", (e) => {
     let object = objects[document.getElementById("model_list").value];
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    object.newVertex([x, y], CMAP.get(colorChoice));
+    object.newVertex([x, y], hex_2_dec(colorChoice));
     object.computeCenter();
   }
 });
@@ -415,12 +418,9 @@ new_model.addEventListener("change", (e) => {
   document.getElementById("model_list").value = "none";
   document.getElementById("model_list").text = " -- select a model -- ";
   document.getElementById("edit_color_choice").disabled = true;
-  document.getElementById("edit_color_choice").value = "none";
-  document.getElementById("edit_color_choice").text =
-    " -- choose existing model -- ";
+  document.getElementById("edit_color_choice").value = "#000000";
   document.getElementById("vertex_color_choice").disabled = true;
-  document.getElementById("vertex_color_choice").value = "none";
-  document.getElementById("vertex_color_choice").text = " -- choose vertex -- ";
+  document.getElementById("vertex_color_choice").value = "#000000";
 });
 
 /* Existing Model Edit Section */
@@ -599,7 +599,7 @@ shearSliderGY.addEventListener("input", (e) => {
 */
 const modelColor = document.getElementById("edit_color_choice");
 modelColor.addEventListener("change", (e) => {
-  objects[existing_model.value].setColor(CMAP.get(e.target.value));
+  objects[existing_model.value].setColor(hex_2_dec(e.target.value));
 });
 
 /*
