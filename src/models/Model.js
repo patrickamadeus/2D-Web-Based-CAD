@@ -136,13 +136,13 @@ export class Model {
     console.log(this.ShearAnchor);
     
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[0] -= this.ShearMap[i][0];
+      this.vertices[i].coordinate[0] -= this.ShearMap[i][0] * this.dilatation;
     }
     for (let i = 0; i < this.vertices.length; i++) {
       this.ShearMap[i][0] = strength * (this.InitMap[i][1] - this.ShearAnchor[1]);
     }
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[0] += this.ShearMap[i][0];
+      this.vertices[i].coordinate[0] += this.ShearMap[i][0] * this.dilatation;
     }
   };
 
@@ -152,13 +152,13 @@ export class Model {
     console.log(this.ShearAnchor);
     
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[1] -= this.ShearMap[i][1];
+      this.vertices[i].coordinate[1] -= this.ShearMap[i][1] * this.dilatation;
     }
     for (let i = 0; i < this.vertices.length; i++) {
       this.ShearMap[i][1] = strength * (this.InitMap[i][0] - this.ShearAnchor[0]);
     }
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[1] += this.ShearMap[i][1];
+      this.vertices[i].coordinate[1] += this.ShearMap[i][1] * this.dilatation;
     }
   };
 
