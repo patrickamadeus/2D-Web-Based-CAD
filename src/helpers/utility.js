@@ -71,7 +71,7 @@ function flatten(v) {
   return floats;
 }
 
-// Convex-Hull Helper Functions
+
 const quickSort = (points) => {
   if (points.length <= 1) {
     return points;
@@ -81,17 +81,17 @@ const quickSort = (points) => {
       .slice(1)
       .filter(
         (point) =>
-          point[0] < pivot[0] || (point[0] === pivot[0] && point[1] < pivot[1])
+          point.coordinate[0] < pivot.coordinate[0] || (point.coordinate[0] === pivot.coordinate[0] && point.coordinate[1] < pivot.coordinate[1])
       );
     const greater = points
       .slice(1)
       .filter(
         (point) =>
-          point[0] > pivot[0] || (point[0] === pivot[0] && point[1] >= pivot[1])
+          point.coordinate[0] > pivot.coordinate[0] || (point.coordinate[0] === pivot.coordinate[0] && point.coordinate[1] >= pivot.coordinate[1])
       );
     return quickSort(less).concat([pivot], quickSort(greater));
   }
-};
+}
 
 const distPtLine = (p1, p2, pt) => {
   const A = p2[1] - p1[1];
@@ -108,11 +108,8 @@ const linearValue = (p1, p2, pt) => {
 };
 
 const myConvexHull = (points, p1 = null, p2 = null, types = 0) => {
-  if (points.length == 0) {
-    return [];
-  }
-  if (points.length == 1) {
-    return [points[0]];
+  if (points.length <= 1) {
+    return points;
   }
 
   if (!types) {
@@ -123,9 +120,9 @@ const myConvexHull = (points, p1 = null, p2 = null, types = 0) => {
     let lower = [];
 
     for (let point of points) {
-      if (linearValue(p_min, p_max, point) < 0) {
+      if (linearValue(p_min.coordinate, p_max.coordinate, point.coordinate) < 0) {
         upper.push(point);
-      } else if (linearValue(p_min, p_max, point) > 0) {
+      } else if (linearValue(p_min.coordinate, p_max.coordinate, point.coordinate) > 0) {
         lower.push(point);
       }
     }
@@ -140,8 +137,8 @@ const myConvexHull = (points, p1 = null, p2 = null, types = 0) => {
   let p_max = null;
 
   for (let point of points) {
-    if (distPtLine(p1, p2, point) > distance) {
-      distance = distPtLine(p1, p2, point);
+    if (distPtLine(p1.coordinate, p2.coordinate, point.coordinate) > distance) {
+      distance = distPtLine(p1.coordinate, p2.coordinate, point.coordinate);
       p_max = point;
     }
   }
@@ -150,10 +147,10 @@ const myConvexHull = (points, p1 = null, p2 = null, types = 0) => {
   let right = [];
 
   for (let point of points) {
-    if (linearValue(p1, p_max, point) * types < 0) {
+    if (linearValue(p1.coordinate, p_max.coordinate, point.coordinate) * types < 0) {
       left.push(point);
     }
-    if (linearValue(p_max, p2, point) * types < 0) {
+    if (linearValue(p_max.coordinate, p2.coordinate, point.coordinate) * types < 0) {
       right.push(point);
     }
   }

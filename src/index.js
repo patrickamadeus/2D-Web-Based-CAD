@@ -392,27 +392,9 @@ addVertexButton.addEventListener("click", (e) => {
 // POLYGON CONVEX HULL
 let convexHullButton = document.getElementById("convex_hull_button");
 convexHullButton.addEventListener("click", (e) => {
-  console.log("hi");
   let object = objects[document.getElementById("model_list").value];
   if (object instanceof Polygon) {
-    let coordinates = quickSort(
-      object.vertices.map((vertex) => vertex.coordinate)
-    );
-    let convex_coordinates = myConvexHull(coordinates);
-
-    let newVertices = [];
-    let id = 0;
-    for (let i = 0; i < convex_coordinates.length; i++) {
-      newVertices.push(
-        new Point(
-          [convex_coordinates[i][0], convex_coordinates[i][1]],
-          object.vertices[0].color,
-          id++
-        )
-      );
-    }
-
-    object.vertices = sortClockwise(newVertices, object.center);
+    object.vertices = sortClockwise(myConvexHull(quickSort(object.vertices)), object.center);
   }
 });
 
