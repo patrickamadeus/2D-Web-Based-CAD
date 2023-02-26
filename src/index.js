@@ -120,11 +120,7 @@ canvas.addEventListener("mousemove", (e) => {
     let y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     let selectedModel = objects[document.getElementById("model_list").value];
-    if (selectedModel instanceof Rectangle) {
-      selectedModel.moveVertex(vertexChoice, [x, y]);
-    } else {
-      selectedModel.moveVertex(vertexChoice, [x, y]);
-    }
+    selectedModel.moveVertex(vertexChoice, [x, y]);
   } else {
     if (document.getElementById("model_list").value != "none") {
       document.getElementById("width_val").disabled = false;
@@ -182,9 +178,6 @@ canvas.addEventListener("mousemove", function (e) {
       } else if (x > x0_rect && y > y0_rect) {
         assignCord = [3, 2, 1, 0];
       }
-
-      console.log(assignCord);
-      console.log(x0_rect, y0_rect);
 
       object.setVertexCoordinate(assignCord[0], x0_rect, y0_rect);
       object.setVertexCoordinate(assignCord[1], x, y0_rect);
@@ -715,8 +708,6 @@ const render = () => {
     objects[i].render(gl, program, vBuffer, cBuffer);
   }
 
-  console.log(existing_model.value);
-  console.log(vertexChoice);
   // to determine which active models
   if (existing_model.value >= 0) {
     for (let i = 0; i < objects[existing_model.value].vertices.length; i++) {

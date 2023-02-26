@@ -71,8 +71,16 @@ export class Square extends Model {
         n_p1 = rotatePoint(n_p1[0], n_p1[1],  c[0] , c[1], diff, -1);
         n_p3 = rotatePoint(n_p3[0], n_p3[1],  c[0] , c[1], diff, -1);
 
-        this.rotation = diff * 180 / Math.PI;
-
+        
+        this.rotation = (diff * 180 / Math.PI);
+        if (i == 3){
+            this.rotation -= 90;
+        } else if (i == 0){
+            this.rotation -= 180;
+        } else if (i == 1){
+            this.rotation -= 270;
+        }
+        
         if (this.rotation < 0) {
             this.rotation += 360;
           }
