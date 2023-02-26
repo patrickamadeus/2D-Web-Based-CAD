@@ -77,5 +77,9 @@ export class Line extends Model {
 
   moveVertex = (i, coor) => {
     this.vertices[i].coordinate = coor;
+    let angle = -(atan3(this.vertices[0].coordinate, this.vertices[1].coordinate) / Math.PI * 180)
+    if(angle < 0) 
+      angle += 360
+    this.rotation = angle;
   };
 }
