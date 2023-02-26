@@ -202,7 +202,7 @@ export class Point {
     this.color = color;
   };
 
-  render = (gl, color, program, vBuffer, cBuffer) => {
+  renderPoint = (gl, color, program, vBuffer, cBuffer) => {
     const vertices = [
       [this.coordinate[0] + 0.02, this.coordinate[1]],
       [this.coordinate[0], this.coordinate[1] + 0.02],
