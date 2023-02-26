@@ -129,10 +129,8 @@ canvas.addEventListener("mousemove", (e) => {
       document.getElementById("trans_y_val").disabled = false;
       document.getElementById("rotate_val").disabled = false;
       document.getElementById("dilatation_val").disabled = false;
-      document.getElementById("shearGX_val").disabled = false;
-      document.getElementById("shearGY_val").disabled = false;
-      document.getElementById("shearLX_val").disabled = false;
-      document.getElementById("shearLY_val").disabled = false;
+      document.getElementById("shearX_val").disabled = false;
+      document.getElementById("shearY_val").disabled = false;
       document.getElementById("edit_color_choice").disabled = false;
       document.getElementById("vertex_color_choice").disabled = false;
     }
