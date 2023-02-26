@@ -131,34 +131,31 @@ export class Model {
   };
 
   ShearingX = (angle, strength) => {
-    console.log(this.ShearMap);
-    console.log(this.InitMap);
-    console.log(this.ShearAnchor);
-    
+    angle = -angle;   // Somehow Shearing X will shearing counterclockwise, therefore we need to negate it
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[0] -= this.ShearMap[i][0] * this.dilatation;
+      this.vertices[i].coordinate[0] -= this.ShearMap[i][0] * this.dilatation * Math.cos(Math.PI / 180 * angle);
+      this.vertices[i].coordinate[1] -= this.ShearMap[i][0] * this.dilatation * Math.sin(Math.PI / 180 * angle);
     }
     for (let i = 0; i < this.vertices.length; i++) {
       this.ShearMap[i][0] = strength * (this.InitMap[i][1] - this.ShearAnchor[1]);
     }
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[0] += this.ShearMap[i][0] * this.dilatation;
+      this.vertices[i].coordinate[0] += this.ShearMap[i][0] * this.dilatation * Math.cos(Math.PI / 180 * angle);
+      this.vertices[i].coordinate[1] += this.ShearMap[i][0] * this.dilatation * Math.sin(Math.PI / 180 * angle);
     }
   };
 
   ShearingY = (angle, strength) => {
-    console.log(this.ShearMap);
-    console.log(this.InitMap);
-    console.log(this.ShearAnchor);
-    
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[1] -= this.ShearMap[i][1] * this.dilatation;
+      this.vertices[i].coordinate[0] -= this.ShearMap[i][1] * this.dilatation * Math.sin(Math.PI / 180 * angle);
+      this.vertices[i].coordinate[1] -= this.ShearMap[i][1] * this.dilatation * Math.cos(Math.PI / 180 * angle);
     }
     for (let i = 0; i < this.vertices.length; i++) {
       this.ShearMap[i][1] = strength * (this.InitMap[i][0] - this.ShearAnchor[0]);
     }
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[1] += this.ShearMap[i][1] * this.dilatation;
+      this.vertices[i].coordinate[0] += this.ShearMap[i][1] * this.dilatation * Math.sin(Math.PI / 180 * angle);
+      this.vertices[i].coordinate[1] += this.ShearMap[i][1] * this.dilatation * Math.cos(Math.PI / 180 * angle);
     }
   };
 
