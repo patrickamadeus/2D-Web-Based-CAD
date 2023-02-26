@@ -16,10 +16,9 @@ export class Model {
     this.center = new Point([0, 0], [0, 0, 0, 1], 0);
     this.rotation = 0;
     this.dilatation = 1;
-    this.localXShear = 0;
-    this.localYShear = 0;
-    this.globalXShear = 0;
-    this.globalYShear = 0;
+    this.ShearAnchor = []
+    this.InitMap = [];    // As shearing might messed up individual vertices, shearing required to copy raw vertices data
+    this.ShearMap = [];   // Contain values of shearing strength for each vertices
     this.id = id;
     this.shape = "none";
   }
@@ -56,6 +55,14 @@ export class Model {
 
   setVertexColor = (id, r, g, b, a) => {
     this.vertices[id].setColor([r, g, b, a]);
+  };
+
+  SetShearMap = () => {
+    this.ShearAnchor = [this.center.coordinate[0], this.center.coordinate[1]];
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.InitMap.push([this.vertices[i].coordinate[0], this.vertices[i].coordinate[1]]);
+      this.ShearMap.push([0, 0]);
+    }
   };
 
   computeCenter = () => {
@@ -123,60 +130,36 @@ export class Model {
     }
   };
 
-  GlobalShearingX = (strength) => {
+  ShearingX = (angle, strength) => {
+    console.log(this.ShearMap);
+    console.log(this.InitMap);
+    console.log(this.ShearAnchor);
+    
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[0] =
-        this.vertices[i].coordinate[0] -
-        this.localXShear *
-          (this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      this.vertices[i].coordinate[0] =
-        this.vertices[i].coordinate[0] +
-        strength * (this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      console.log(this.vertices[i].coordinate[0]);
+      this.vertices[i].coordinate[0] -= this.ShearMap[i][0];
     }
-    this.localXShear = strength;
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.ShearMap[i][0] = strength * (this.InitMap[i][1] - this.ShearAnchor[1]);
+    }
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.vertices[i].coordinate[0] += this.ShearMap[i][0];
+    }
   };
 
-  GlobalShearingY = (strength) => {
+  ShearingY = (angle, strength) => {
+    console.log(this.ShearMap);
+    console.log(this.InitMap);
+    console.log(this.ShearAnchor);
+    
     for (let i = 0; i < this.vertices.length; i++) {
-      this.vertices[i].coordinate[1] =
-        this.vertices[i].coordinate[1] -
-        this.localYShear *
-          (this.vertices[i].coordinate[0] - this.center.coordinate[0]);
-      this.vertices[i].coordinate[1] =
-        this.vertices[i].coordinate[1] +
-        strength * (this.vertices[i].coordinate[0] - this.center.coordinate[0]);
-      console.log(this.vertices[i].coordinate[0]);
+      this.vertices[i].coordinate[1] -= this.ShearMap[i][1];
     }
-    this.localYShear = strength;
-  };
-
-  LocalShearingX = (angle, strength) => {
-    const sstrength = strength;
-    const diffAngle = ((angle - this.rotation) * Math.PI) / 180;
-
-    console.log(sstrength, this.shear);
     for (let i = 0; i < this.vertices.length; i++) {
-      console.log("X : ");
-      console.log(this.vertices[i].coordinate[0]);
-      console.log("Y : ");
-      console.log(this.vertices[i].coordinate[1]);
-      console.log("Shear Power : ");
-      console.log(this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      this.vertices[i].coordinate[0] =
-        this.vertices[i].coordinate[0] -
-        this.shear *
-          (this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      this.vertices[i].coordinate[0] =
-        this.vertices[i].coordinate[0] +
-        sstrength *
-          (this.vertices[i].coordinate[1] - this.center.coordinate[1]);
-      console.log(this.vertices[i].coordinate[0]);
-
-      console.log("NEXT");
-      //this.vertices[i].coordinate[1] = this.center.coordinate[1] + (this.vertices[i].coordinate[1] / 2);
+      this.ShearMap[i][1] = strength * (this.InitMap[i][0] - this.ShearAnchor[0]);
     }
-    this.shear = strength;
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.vertices[i].coordinate[1] += this.ShearMap[i][1];
+    }
   };
 
   render = (gl, program, vBuffer, cBuffer) => {

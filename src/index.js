@@ -210,18 +210,15 @@ canvas.addEventListener("mousemove", (e) => {
   let y = (object.getCenter()[1] / 2) * CANVAS_HEIGHT;
 
   // Update base selection access
-  document.getElementById("width_val").disabled = true;
-  document.getElementById("height_val").disabled = true;
-  document.getElementById("trans_x_val").disabled = true;
-  document.getElementById("trans_y_val").disabled = true;
-  document.getElementById("rotate_val").disabled = true;
-  document.getElementById("dilatation_val").disabled = true;
-  document.getElementById("shearGX_val").disabled = true;
-  document.getElementById("shearGY_val").disabled = true;
-  document.getElementById("shearLX_val").disabled = true;
-  document.getElementById("shearLY_val").disabled = true;
-  document.getElementById("vertex_color_choice").disabled = true;
-  document.getElementById("edit_color_choice").disabled = true;
+  document.getElementById("width_val").disabled = false;
+  document.getElementById("height_val").disabled = false;
+  document.getElementById("trans_x_val").disabled = false;
+  document.getElementById("trans_y_val").disabled = false;
+  document.getElementById("rotate_val").disabled = false;
+  document.getElementById("dilatation_val").disabled = false;
+  document.getElementById("shearX_val").disabled = false;
+  document.getElementById("shearY_val").disabled = false;
+  document.getElementById("edit_color_choice").disabled = false;
 
   // Update position
   document.getElementById("trans_x_val").value = x;
@@ -287,10 +284,8 @@ canvas.addEventListener("mousedown", (e) => {
   document.getElementById("trans_y_val").disabled = true;
   document.getElementById("rotate_val").disabled = true;
   document.getElementById("dilatation_val").disabled = true;
-  document.getElementById("shearGX_val").disabled = true;
-  document.getElementById("shearGY_val").disabled = true;
-  document.getElementById("shearLX_val").disabled = true;
-  document.getElementById("shearLY_val").disabled = true;
+  document.getElementById("shearX_val").disabled = true;
+  document.getElementById("shearY_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
 
@@ -307,6 +302,7 @@ canvas.addEventListener("mousedown", (e) => {
     } else {
       isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
+      objects[objects.length - 1].SetShearMap();
       updateModelList();
     }
   } else if (modelChoice == "square") {
@@ -321,6 +317,7 @@ canvas.addEventListener("mousedown", (e) => {
     } else {
       isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
+      objects[objects.length - 1].SetShearMap();
       updateModelList();
     }
   } else if (modelChoice == "line") {
@@ -334,6 +331,7 @@ canvas.addEventListener("mousedown", (e) => {
     } else {
       isDrawingModel = false;
       objects[objects.length - 1].computeCenter();
+      objects[objects.length - 1].SetShearMap();
       updateModelList();
     }
   } else if (modelChoice == "polygon") {
@@ -360,6 +358,7 @@ canvas.addEventListener("contextmenu", (e) => {
 
     isDrawingModel = false;
     objects[objects.length - 1].computeCenter();
+    objects[objects.length - 1].SetShearMap();
     updateModelList();
   }
 });
@@ -461,10 +460,8 @@ if (existing_model.value == "none") {
   document.getElementById("trans_y_val").disabled = true;
   document.getElementById("rotate_val").disabled = true;
   document.getElementById("dilatation_val").disabled = true;
-  document.getElementById("shearGX_val").disabled = true;
-  document.getElementById("shearGY_val").disabled = true;
-  document.getElementById("shearLX_val").disabled = true;
-  document.getElementById("shearLY_val").disabled = true;
+  document.getElementById("shearX_val").disabled = true;
+  document.getElementById("shearY_val").disabled = true;
   document.getElementById("edit_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").disabled = true;
   document.getElementById("export_model_button").disabled = true;
@@ -489,10 +486,8 @@ existing_model.addEventListener("change", (e) => {
   document.getElementById("trans_y_val").disabled = false;
   document.getElementById("rotate_val").disabled = false;
   document.getElementById("dilatation_val").disabled = false;
-  document.getElementById("shearGX_val").disabled = false;
-  document.getElementById("shearGY_val").disabled = false;
-  document.getElementById("shearLX_val").disabled = false;
-  document.getElementById("shearLY_val").disabled = false;
+  document.getElementById("shearX_val").disabled = false;
+  document.getElementById("shearY_val").disabled = false;
   document.getElementById("edit_color_choice").disabled = false;
 
   // Update position
@@ -614,16 +609,16 @@ dilatationSlider.addEventListener("input", (e) => {
 █▀ █░█ █▀▀ ▄▀█ █▀█
 ▄█ █▀█ ██▄ █▀█ █▀▄
 */
-const shearSliderGX = document.getElementById("shearGX_val");
-shearSliderGX.addEventListener("input", (e) => {
-  document.getElementById("shearGX_output").textContent = e.target.value;
-  objects[existing_model.value].GlobalShearingX(e.target.value);
+const shearSliderX = document.getElementById("shearX_val");
+shearSliderX.addEventListener("input", (e) => {
+  document.getElementById("shearX_output").textContent = e.target.value;
+  objects[existing_model.value].ShearingX(objects[existing_model.value].rotation, e.target.value);
 });
 
-const shearSliderGY = document.getElementById("shearGY_val");
-shearSliderGY.addEventListener("input", (e) => {
-  document.getElementById("shearGY_output").textContent = e.target.value;
-  objects[existing_model.value].GlobalShearingY(e.target.value);
+const shearSliderY = document.getElementById("shearY_val");
+shearSliderY.addEventListener("input", (e) => {
+  document.getElementById("shearY_output").textContent = e.target.value;
+  objects[existing_model.value].ShearingY(objects[existing_model.value].rotation, e.target.value);
 });
 
 /*
@@ -695,6 +690,7 @@ const importFile = (file) => {
         objects.push(new Polygon(polygonID++));
       }
       objects[objects.length - 1].copy(toAppend[i]);
+      objects[objects.length - 1].SetShearMap();
     }
     updateModelList();
   };
