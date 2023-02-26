@@ -9,6 +9,7 @@ import {
 // Helpers & Utils
 import { CANVAS_HEIGHT, CANVAS_WIDTH, CMAP, RCMAP } from "./helpers/const.js";
 import { exportFile } from "./helpers/load.js";
+import { flatten } from "./helpers/utility.js";
 
 // Models
 import { Line } from "./models/line.js";
@@ -121,25 +122,34 @@ canvas.addEventListener("mousemove", (e) => {
 
     let selectedModel = objects[document.getElementById("model_list").value];
     selectedModel.moveVertex(vertexChoice, [x, y]);
-  } else {
-    if (document.getElementById("model_list").value != "none") {
-      document.getElementById("width_val").disabled = false;
-      document.getElementById("height_val").disabled = false;
-      document.getElementById("trans_x_val").disabled = false;
-      document.getElementById("trans_y_val").disabled = false;
-      document.getElementById("rotate_val").disabled = false;
-      document.getElementById("dilatation_val").disabled = false;
-      document.getElementById("shearX_val").disabled = false;
-      document.getElementById("shearY_val").disabled = false;
-      document.getElementById("edit_color_choice").disabled = false;
-      document.getElementById("vertex_color_choice").disabled = false;
-    }
   }
 });
 
 canvas.addEventListener("mouseup", (e) => {
   if (isSelectingVertex) {
     isDraggingVertex = false;
+    let selectedModel = objects[document.getElementById("model_list").value];
+    console.log("yap")
+
+    console.log(selectedModel instanceof Line)
+    // LINE
+    if (selectedModel instanceof Line) {
+      console.log("YAP KEDISABLE")
+      document.getElementById("height_val").disabled = true;
+      document.getElementById("shearX_val").disabled = true;
+      document.getElementById("shearY_val").disabled = true;
+    }
+
+    // SQUARE
+    if (selectedModel instanceof Square) {
+      document.getElementById("height_val").disabled = true;
+    }
+
+    // RECTANGLE
+    if (selectedModel instanceof Polygon) {
+      document.getElementById("width_val").disabled = true;
+      document.getElementById("height_val").disabled = true;
+    }
   }
 });
 
@@ -429,6 +439,19 @@ new_model.addEventListener("change", (e) => {
   document.getElementById("edit_color_choice").value = "#000000";
   document.getElementById("vertex_color_choice").disabled = true;
   document.getElementById("vertex_color_choice").value = "#000000";
+
+  if (new_model.value != "none") {
+    document.getElementById("width_val").disabled = true;
+    document.getElementById("height_val").disabled = true;
+    document.getElementById("trans_x_val").disabled = true;
+    document.getElementById("trans_y_val").disabled = true;
+    document.getElementById("rotate_val").disabled = true;
+    document.getElementById("dilatation_val").disabled = true;
+    document.getElementById("shearX_val").disabled = true;
+    document.getElementById("shearY_val").disabled = true;
+    document.getElementById("edit_color_choice").disabled = true;
+    document.getElementById("vertex_color_choice").disabled = true;
+  }
 });
 
 /* Existing Model Edit Section */
@@ -593,12 +616,50 @@ const shearSliderX = document.getElementById("shearX_val");
 shearSliderX.addEventListener("input", (e) => {
   document.getElementById("shearX_output").textContent = e.target.value;
   objects[existing_model.value].ShearingX(objects[existing_model.value].rotation, e.target.value);
+
+  if (shearSliderX.value != 0){
+    // disable width and height slider
+    document.getElementById("width_val").disabled = true;
+    document.getElementById("height_val").disabled = true;
+  } else{
+    // enable width and height slider
+    document.getElementById("width_val").disabled = false;
+    document.getElementById("height_val").disabled = false;
+
+    if (objects[existing_model.value] instanceof Polygon){
+      document.getElementById("width_val").disabled = true;
+      document.getElementById("height_val").disabled = true;
+    }
+
+    if (objects[existing_model.value] instanceof Line || objects[existing_model.value] instanceof Square){
+      document.getElementById("height_val").disabled = true;
+    }
+  }
 });
 
 const shearSliderY = document.getElementById("shearY_val");
 shearSliderY.addEventListener("input", (e) => {
   document.getElementById("shearY_output").textContent = e.target.value;
   objects[existing_model.value].ShearingY(objects[existing_model.value].rotation, e.target.value);
+
+  if (shearSliderY.value != 0){
+    // disable width and height slider
+    document.getElementById("width_val").disabled = true;
+    document.getElementById("height_val").disabled = true;
+  } else{
+    // enable width and height slider
+    document.getElementById("width_val").disabled = false;
+    document.getElementById("height_val").disabled = false;
+
+    if (objects[existing_model.value] instanceof Polygon){
+      document.getElementById("width_val").disabled = true;
+      document.getElementById("height_val").disabled = true;
+    }
+
+    if (objects[existing_model.value] instanceof Line || objects[existing_model.value] instanceof Square){
+      document.getElementById("height_val").disabled = true;
+    }
+  }
 });
 
 /*
@@ -687,13 +748,29 @@ const render = () => {
   // to determine which active models
   if (existing_model.value >= 0) {
     for (let i = 0; i < objects[existing_model.value].vertices.length; i++) {
-      objects[existing_model.value].vertices[i].render(
-        gl,
-        [1, 1, 1, 1],
-        program,
-        vBuffer,
-        cBuffer
-      );
+      const vertices = [
+        [objects[existing_model.value].vertices[i].coordinate[0] + 0.02, objects[existing_model.value].vertices[i].coordinate[1]],
+        [objects[existing_model.value].vertices[i].coordinate[0], objects[existing_model.value].vertices[i].coordinate[1] + 0.02],
+        [objects[existing_model.value].vertices[i].coordinate[0] - 0.02, objects[existing_model.value].vertices[i].coordinate[1]],
+        [objects[existing_model.value].vertices[i].coordinate[0], objects[existing_model.value].vertices[i].coordinate[1] - 0.02],
+      ];
+      const colors = [[1, 1, 1, 1],[1, 1, 1, 1],[1, 1, 1, 1],[1, 1, 1, 1]];
+  
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+  
+      const vPosition = gl.getAttribLocation(program, "vPosition");
+      gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vPosition);
+  
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+  
+      const vColor = gl.getAttribLocation(program, "vColor");
+      gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vColor);
+  
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
     }
   }
 
@@ -703,15 +780,30 @@ const render = () => {
     vertexChoice >= 0 &&
     vertexChoice <= objects[existing_model.value].vertices.length - 1
   ) {
-    objects[existing_model.value].vertices[vertexChoice].render(
-      gl,
-      [0, 0, 0, 1],
-      program,
-      vBuffer,
-      cBuffer
-    );
-  }
+    const vertices = [
+      [objects[existing_model.value].vertices[vertexChoice].coordinate[0] + 0.02, objects[existing_model.value].vertices[vertexChoice].coordinate[1]],
+      [objects[existing_model.value].vertices[vertexChoice].coordinate[0], objects[existing_model.value].vertices[vertexChoice].coordinate[1] + 0.02],
+      [objects[existing_model.value].vertices[vertexChoice].coordinate[0] - 0.02, objects[existing_model.value].vertices[vertexChoice].coordinate[1]],
+      [objects[existing_model.value].vertices[vertexChoice].coordinate[0], objects[existing_model.value].vertices[vertexChoice].coordinate[1] - 0.02],
+    ];
+    const colors = [[0, 0, 0, 1],[0, 0, 0, 1],[0, 0, 0, 1],[0, 0, 0, 1]];
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+
+    const vPosition = gl.getAttribLocation(program, "vPosition");
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+
+    const vColor = gl.getAttribLocation(program, "vColor");
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vColor);
+
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
+  }
   window.requestAnimFrame(render);
 };
 

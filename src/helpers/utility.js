@@ -108,8 +108,12 @@ const linearValue = (p1, p2, pt) => {
 };
 
 const myConvexHull = (points, p1 = null, p2 = null, types = 0) => {
-  if (points.length <= 1) {
-    return points;
+  if (points.length == 0) {
+    return [];
+  }
+  
+  if (points.length == 1){
+    return [points[0]]
   }
 
   if (!types) {
